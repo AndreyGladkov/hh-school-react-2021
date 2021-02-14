@@ -15,7 +15,7 @@ function useFetchWithErrorHandling(url)  {
         fetch(url)
             .then(handleError)
                 .then(response => response.json())
-                    .then(data => {setData(data); setError()})
+                    .then(data => {setData(data); console.log(data); setError()})
                         .catch(error => {setError(error); setData()})
     }, [url])
 
