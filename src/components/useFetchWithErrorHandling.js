@@ -11,11 +11,12 @@ function useFetchWithErrorHandling(url)  {
     const [error, setError] = useState();
 
     useEffect(() => {
+        if (url == null) return;
         fetch(url)
             .then(handleError)
                 .then(response => response.json())
-                    .then(setData)
-                        .catch(setError)
+                    .then(data => {setData(data); setError()})
+                        .catch(error => {setError(error); setData()})
     }, [url])
 
     return [data, error];
