@@ -1,49 +1,55 @@
 import React from "react";
 import { fetchAsync } from "./services/helpers";
-import { URL_REPOS } from "./services/consts";
+import { URL_REPOS, URL_USERS } from "./services/consts";
 
 import { Settings } from "./components";
 import { Card } from "./components";
 import "./css/App.css";
 
 function App() {
-    const [isFirstRender, setIsFirstRender] = React.useState(true);
     const [isShowSettings, setShowSettings] = React.useState(true);
     const [developer, setDeveloper] = React.useState(null);
     const [reviewer, setReviewer] = React.useState(null);
 
     const toogleSettings = (_) => {
-        setShowSettings((prev) => !prev);
+        setShowSettings(!isShowSettings);
     };
 
     const handler = async (_) => {
         const settings = JSON.parse(localStorage.getItem("settings"));
         const blacklist = settings.blacklist.split(";");
-        const url = `${URL_REPOS}/${settings.login}/${settings.repo}/contributors`;
-        let resp;
+        const urlRepo = `${URL_REPOS}/${settings.repo}/contributors`;
+        const urlUser = `${URL_USERS}/${settings.login}`;
+        let contributors;
+        let user;
 
         try {
-            resp = await fetchAsync(url, "GET");
+            contributors = await fetchAsync(urlRepo, "GET");
         } catch {
-            alert("Bad login or repo name");
+            alert("Bad repo name");
             return;
         }
 
-        const self = resp.find((i) => i.login === settings.login);
+        try {
+            user = await fetchAsync(urlUser, "GET");
+        } catch {
+            alert("Bad login name");
+            return;
+        }
 
         if (blacklist.length > 0) {
             for (const item of blacklist) {
-                resp = resp.filter((i) => i.login !== item);
+                contributors = contributors.filter((i) => i.login !== item);
             }
         }
 
-        const random = resp[Math.floor(Math.random() * resp.length)];
+        const random = contributors[Math.floor(Math.random() * contributors.length)];
 
         const current = {
             header: "Developer",
-            headerValue: self.login,
-            id: self.id,
-            content: self.avatar_url,
+            headerValue: user.login,
+            id: user.id,
+            content: user.avatar_url,
         };
 
         if (random) {
@@ -60,7 +66,6 @@ function App() {
         }
 
         setDeveloper(current);
-        setIsFirstRender(false);
     };
 
     return (
@@ -72,12 +77,10 @@ function App() {
                     <button onClick={handler}>Generate</button>
                 </div>
             </div>
-            {isFirstRender === true ? null : (
-                <div className="review">
-                    <Card {...developer} />
-                    {reviewer === null ? null : <Card {...reviewer} />}
-                </div>
-            )}
+            <div className="review">
+                {developer === null ? null : <Card {...developer} />}
+                {reviewer === null ? null : <Card {...reviewer} />}
+            </div>
         </>
     );
 }

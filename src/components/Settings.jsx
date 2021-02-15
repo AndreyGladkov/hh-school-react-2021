@@ -51,7 +51,7 @@ export default function Settings() {
                     type="text"
                     value={repo}
                     onChange={onRepoChange}
-                    placeholder="example"
+                    placeholder="owner/repo"
                 />
             </div>
 
