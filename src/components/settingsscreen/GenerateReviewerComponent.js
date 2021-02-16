@@ -12,15 +12,20 @@ const GenerateReviewerComponent = () => {
     const [potentialReviewers, setPotentialReviewers] = useState();
 
     useEffect(() => {
-        if (!selectedRepo.contributors) return;
+        if (!selectedRepo || !selectedRepo.contributors) return;
         const reviewers =  selectedRepo.contributors.filter(contributor => 
-            (!blacklist.includes(contributor.login) && contributor.login !== selectedRepo.repo.owner.login));
+            (!blacklist.map(item => item.toLowerCase()).includes(contributor.login.toLowerCase()) 
+                && contributor.login !== selectedRepo.repo.owner.login));
         setPotentialReviewers(reviewers);
     }, [selectedRepo, blacklist])
 
     const generateReviewer = () => {
         const randomIndex = Math.floor(Math.random()*potentialReviewers.length);
         dispatchSelectedRepo({type: "SELECT_REVIEWER", reviewer: potentialReviewers[randomIndex]});
+    }
+
+    if (!selectedRepo || !selectedRepo.contributors) {
+        return <></>
     }
 
     if (!potentialReviewers || potentialReviewers.length === 0) {

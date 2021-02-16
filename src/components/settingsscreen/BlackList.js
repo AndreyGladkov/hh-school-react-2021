@@ -12,7 +12,7 @@ const BlackList = () => {
     }
 
     const addLoginToBlackList = (login) => {
-        if (login !== "" && !blacklist.includes(login)) {
+        if (login !== "" && !blacklist.map(item => item.toLowerCase()).includes(login.toLowerCase())) {
             setBlacklist([...blacklist, login])
         }
         setLoginForBlacklist("")

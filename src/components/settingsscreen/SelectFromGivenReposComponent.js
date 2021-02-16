@@ -27,7 +27,7 @@ const SelectFromGivenReposComponent = () => {
 
     return (
         <div style = {{color: "#4a4e4d", marginBottom: "20px"}}>
-            {githubUserData.repos &&
+            {githubUserData && githubUserData.repos &&
             <select value = {selectedRepo.repo.name} onChange = {(event) => updateSelectedRepo(event.currentTarget.value)}>
                 <option value = ""></option>
                 {githubUserData.repos.map((repository) => {

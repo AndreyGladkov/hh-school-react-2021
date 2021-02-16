@@ -8,7 +8,7 @@ const SelectedRepo = () => {
 
     const { selectedRepo } = useContext(RepoContext);
 
-    if (selectedRepo.repo) {
+    if (selectedRepo && selectedRepo.repo) {
         return (
             <>
             {selectedRepo.repo.name && 

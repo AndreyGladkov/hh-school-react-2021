@@ -6,17 +6,15 @@ import { fetchWithError } from '../util/fetchWithErrorHandling';
 const ManuallySelectRepositoryComponent = () => {
 
     const { githubUserData } = useContext(UserContext);
-    const { dispatchSelectedRepo } = useContext(RepoContext);
+    const { selectedRepo, dispatchSelectedRepo } = useContext(RepoContext);
 
     const [repoName, setRepoName] = useState();
-    const [repoError, setRepoError] = useState();
 
     async function fetchRepoData() {
         if (!repoName) return;
-        setRepoError();
         const repository = 
             await fetchWithError("https://api.github.com/repos/" + githubUserData.user.login + "/" + repoName)
-                    .catch(() => setRepoError("Unknow repository"));
+                    .catch(() => dispatchSelectedRepo({type: "ERROR"}));
         if (repository) {
             const contributorsData =  
                 await fetchWithError(repository.contributors_url)
@@ -31,7 +29,7 @@ const ManuallySelectRepositoryComponent = () => {
             <button type = "button"  onClick = {fetchRepoData} className = "fetchUserBtn" >
                 Fetch Repo Data
             </button>
-            {<div style = {{color: "#fe8a71"}}>&#8203;{repoError}</div>}
+            {<div style = {{color: "#fe8a71"}}>&#8203;{selectedRepo.error}</div>}
         </div>
     )
 }

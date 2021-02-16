@@ -10,7 +10,7 @@ const SelectedUser = () => {
 
     return (
         <FlexContainer flexDirection = "column" style = {{alignItems: "center"}}>
-            {githubUserData &&
+            {githubUserData && githubUserData.user.login &&
                 <>
                     <h3 className = "subTitle">Selected user</h3>
                     <FlexContainer flexDirection = "column" style = {{alignItems: "center"}}>

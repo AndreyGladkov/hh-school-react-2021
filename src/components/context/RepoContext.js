@@ -4,6 +4,7 @@ export const RepoContext = createContext();
 
 const initialState = {
     repo: {},
+    error: "",
     contibutors: [],
     reviewer: {}
 }
@@ -18,12 +19,18 @@ const repoReducer = (state, action) => {
             return {
                 repo: action.repo, 
                 contributors: action.contributors,
-                reviewer: {}
+                reviewer: {},
+                error: ""
             }
         case "SELECT_REVIEWER":
             return {
                 ...state,
                 reviewer: action.reviewer
+            }
+        case "ERROR":
+            return {
+                ...initialState,
+                error: "Unknow repository"
             }
         case "CLEAR":
             return initialState;

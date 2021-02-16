@@ -8,7 +8,7 @@ const SelectedReviewer = () => {
 
     const { selectedRepo } = useContext(RepoContext);
 
-    if (selectedRepo.reviewer) {
+    if (selectedRepo && selectedRepo.reviewer) {
         return (
             <>
                 {selectedRepo.reviewer.login && 

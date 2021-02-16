@@ -40,7 +40,7 @@ const SelectUserComponent = () => {
             <button type = "button"  onClick = {fetchUserDataAsync} className = "fetchUserBtn" >
                 Fetch User Data
             </button>
-            {<div style = {{color: "#fe8a71"}}>&#8203;{githubUserData && githubUserData.error}</div>}
+            {<div style = {{color: "#fe8a71"}}>&#8203;{githubUser && githubUserData && githubUserData.error}</div>}
         </div>
     )
 }
