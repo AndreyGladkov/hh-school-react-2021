@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react'
 import { BlackListContext } from '../context/BlackListContext';
 import { RepoContext } from '../context/RepoContext';
 
+import "../../styles/styles.css"
+
 const GenerateReviewerComponent = () => {
 
     const { selectedRepo, dispatchSelectedRepo } = useContext(RepoContext);
@@ -22,11 +24,13 @@ const GenerateReviewerComponent = () => {
     }
 
     if (!potentialReviewers || potentialReviewers.length === 0) {
-        return <div>No potential reviewers for this repository</div>
+        return <div className = "generateReviewersDiv" style = {{color: "#fe8a71", fontSize: "20px"}}>No potential reviewers for this repository</div>
     }
 
     return (
-        <button type = "button" onClick = {generateReviewer}>Generate reviewer</button>
+        <div className = "generateReviewersDiv">
+            <button type = "button" className = "generateBtn" onClick = {generateReviewer}>Generate reviewer</button>
+        </div>
     )
 }
 

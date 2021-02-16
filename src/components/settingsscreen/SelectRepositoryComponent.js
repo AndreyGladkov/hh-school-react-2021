@@ -1,41 +1,31 @@
-import React, {useContext} from 'react'
-import { RepoContext } from '../context/RepoContext';
-import { UserContext } from '../context/UserContext';
-import { fetchWithError } from '../util/fetchWithErrorHandling';
+import React, {useState} from 'react'
+import SelectFromGivenReposComponent from './SelectFromGivenReposComponent';
+import ManuallySelectRepositoryComponent from './ManuallySelectRepositoryComponent';
+
+import "../../styles/styles.css"
 
 const SelectRepositoryComponent = () => {
 
-    const { githubUserData } = useContext(UserContext);
-    const { selectedRepo, dispatchSelectedRepo } = useContext(RepoContext);
+    const [selectFromGivenRepos, setSelectFromGivenRepos] = useState(true);
 
-    const getSelectedRepoFromList = (repoName) => {
-        return githubUserData.repos.reduce((prevRepository, repository) => {
-            if (repository.name === repoName)
-                return repository;
-            return prevRepository;
-        })
-    }
-
-    const updateSelectedRepo = (repoName) => {
-        const repository = getSelectedRepoFromList(repoName)
-        fetchWithError(repository.contributors_url)
-            .then(contributorsData => {
-                dispatchSelectedRepo({type: "SELECT_REPO", repo: repository, contributors: contributorsData})
-            })
-                .catch((error) => console.log(error.message))
+    const switchSelection = (event) => {
+        setSelectFromGivenRepos(event.target.value === "given")
     }
 
     return (
-        <div>
-            <div>Select repository for review</div>
-            {githubUserData.repos &&
-            <select value = {selectedRepo.repo.name} onChange = {(event) => updateSelectedRepo(event.currentTarget.value)}>
-                <option value = ""></option>
-                {githubUserData.repos.map((repository) => {
-                    return (
-                        <option key = {repository.name} value = {repository.name} >{repository.name}</option>)   
-                })}
-            </select>}
+        <div style = {{marginBottom: "20px", height: "70px"}}>
+            <div style = {{marginBottom: "20px"}}>
+                <h3 style = {{display: "inline", marginRight: "20px", marginBottom: "30px"}} className = "subTitle">Select repository for review</h3>
+                <label>Manually</label>
+                <input type = "radio" name = "select" value = "manually" 
+                        onChange = {switchSelection} 
+                        checked = {!selectFromGivenRepos}/>
+                <label>From given</label>
+                <input type = "radio" name = "select" value = "given" 
+                        onChange = {switchSelection}
+                        checked = {selectFromGivenRepos}/>
+            </div>
+            {selectFromGivenRepos ? <SelectFromGivenReposComponent /> : <ManuallySelectRepositoryComponent />}
         </div>
     )
 }

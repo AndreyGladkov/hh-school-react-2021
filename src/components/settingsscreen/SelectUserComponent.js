@@ -3,6 +3,8 @@ import {fetchWithError} from '../util/fetchWithErrorHandling'
 import {UserContext} from "../context/UserContext";
 import { RepoContext } from '../context/RepoContext';
 
+import "../../styles/styles.css"
+
 const SelectUserComponent = () => {
 
     const { githubUserData, dispatchGithubUserData } = useContext(UserContext);
@@ -32,11 +34,13 @@ const SelectUserComponent = () => {
     }
 
     return (
-        <div>
-            <div>User github login: </div>
+        <div style = {{color: "#4a4e4d", marginBottom: "20px"}}>
+            <h3 className = "subTitle">User github login</h3>
             <input type = "text" onChange = {(event) => setGithubUser(event.target.value)} />
-            <button type = "button" onClick = {fetchUserDataAsync}>Fetch User Data</button>
-            {githubUserData && <div>{githubUserData.error}</div>}
+            <button type = "button"  onClick = {fetchUserDataAsync} className = "fetchUserBtn" >
+                Fetch User Data
+            </button>
+            {<div style = {{color: "#fe8a71"}}>&#8203;{githubUserData && githubUserData.error}</div>}
         </div>
     )
 }
