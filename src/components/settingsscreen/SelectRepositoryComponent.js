@@ -1,16 +1,15 @@
-import React, {useContext, useEffect} from 'react'
-import { RepoContext } from './context/RepoContext';
-import { UserReposContext, UserContext } from './context/UserContext';
-import { fetchWithError } from './useFetchWithErrorHandling';
+import React, {useContext} from 'react'
+import { RepoContext } from '../context/RepoContext';
+import { UserContext } from '../context/UserContext';
+import { fetchWithError } from '../util/fetchWithErrorHandling';
 
 const SelectRepositoryComponent = () => {
 
-    const { githubUserRepos } = useContext(UserReposContext);
     const { githubUserData } = useContext(UserContext);
     const { selectedRepo, dispatchSelectedRepo } = useContext(RepoContext);
 
     const getSelectedRepoFromList = (repoName) => {
-        return githubUserRepos.reduce((prevRepository, repository) => {
+        return githubUserData.repos.reduce((prevRepository, repository) => {
             if (repository.name === repoName)
                 return repository;
             return prevRepository;
@@ -19,9 +18,9 @@ const SelectRepositoryComponent = () => {
 
     const updateSelectedRepo = (repoName) => {
         const repository = getSelectedRepoFromList(repoName)
-        fetchWithError(`https://api.github.com/repos/${githubUserData.login}/${repository.name}/contributors`)
+        fetchWithError(repository.contributors_url)
             .then(contributorsData => {
-                dispatchSelectedRepo({type: "UPDATE", repo: repository, contributors: contributorsData})
+                dispatchSelectedRepo({type: "SELECT_REPO", repo: repository, contributors: contributorsData})
             })
                 .catch((error) => console.log(error.message))
     }
@@ -29,10 +28,10 @@ const SelectRepositoryComponent = () => {
     return (
         <div>
             <div>Select repository for review</div>
-            {githubUserRepos &&
+            {githubUserData.repos &&
             <select value = {selectedRepo.repo.name} onChange = {(event) => updateSelectedRepo(event.currentTarget.value)}>
                 <option value = ""></option>
-                {githubUserRepos.map((repository) => {
+                {githubUserData.repos.map((repository) => {
                     return (
                         <option key = {repository.name} value = {repository.name} >{repository.name}</option>)   
                 })}

@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react'
 import BlackListComponent from './BlackListComponent'
-import { BlackListContext } from './context/BlackListContext'
+import { BlackListContext } from '../context/BlackListContext'
 
 const BlackList = () => {
 

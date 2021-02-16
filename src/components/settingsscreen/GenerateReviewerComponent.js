@@ -1,0 +1,33 @@
+import React, { useState, useEffect, useContext } from 'react'
+import { BlackListContext } from '../context/BlackListContext';
+import { RepoContext } from '../context/RepoContext';
+
+const GenerateReviewerComponent = () => {
+
+    const { selectedRepo, dispatchSelectedRepo } = useContext(RepoContext);
+    const { blacklist } = useContext(BlackListContext);
+
+    const [potentialReviewers, setPotentialReviewers] = useState();
+
+    useEffect(() => {
+        if (!selectedRepo.contributors) return;
+        const reviewers =  selectedRepo.contributors.filter(contributor => 
+            (!blacklist.includes(contributor.login) && contributor.login !== selectedRepo.repo.owner.login));
+        setPotentialReviewers(reviewers);
+    }, [selectedRepo, blacklist])
+
+    const generateReviewer = () => {
+        const randomIndex = Math.floor(Math.random()*potentialReviewers.length);
+        dispatchSelectedRepo({type: "SELECT_REVIEWER", reviewer: potentialReviewers[randomIndex]});
+    }
+
+    if (!potentialReviewers || potentialReviewers.length === 0) {
+        return <div>No potential reviewers for this repository</div>
+    }
+
+    return (
+        <button type = "button" onClick = {generateReviewer}>Generate reviewer</button>
+    )
+}
+
+export default GenerateReviewerComponent

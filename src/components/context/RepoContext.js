@@ -4,7 +4,8 @@ export const RepoContext = createContext();
 
 const initialState = {
     repo: {},
-    contibutors: []
+    contibutors: [],
+    reviewer: {}
 }
 
 const getSelectedRepoFromLocalStorage = () => {
@@ -13,10 +14,16 @@ const getSelectedRepoFromLocalStorage = () => {
 
 const repoReducer = (state, action) => {
     switch (action.type) {
-        case "UPDATE":
+        case "SELECT_REPO":
             return {
                 repo: action.repo, 
-                contributors: action.contributors
+                contributors: action.contributors,
+                reviewer: {}
+            }
+        case "SELECT_REVIEWER":
+            return {
+                ...state,
+                reviewer: action.reviewer
             }
         case "CLEAR":
             return initialState;
