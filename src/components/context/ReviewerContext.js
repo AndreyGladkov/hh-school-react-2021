@@ -1,11 +1,7 @@
 import React, {useState, createContext, useEffect} from "react"
 
 export const UserContext = createContext();
-
-const initialState = {
-    repo: {},
-    contibutors: []
-}
+export const UserReposContext = createContext();
 
 const getGithubUserDataFromLocalStorage = () => {
     return localStorage.getItem("githubUserData") === null ? null : JSON.parse(localStorage.getItem("githubUserData"));
@@ -17,8 +13,8 @@ const getGithubUserReposFromLocalStorage = () => {
 
 function UserContextProvider({children}) {
     
-    const [githubUserData, setGithubUserData] = useState(getGithubUserDataFromLocalStorage());
-    const [githubUserRepos, setGithubUserRepos] = useState(getGithubUserReposFromLocalStorage());
+    const [reviewer, setReviewer] = useState();
+    const [repoContributors, setRepoContributors] = useState()
 
     useEffect(() => {
         if (githubUserData === undefined) return;

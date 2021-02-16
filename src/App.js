@@ -1,8 +1,10 @@
 import React from 'react'
-import BlackList from './components/BlackList';
 import BlackListContextProvider, { BlackListContext } from './components/context/BlackListContext';
+import RepoContextProvider from './components/context/RepoContext';
 import UserContextProvider from './components/context/UserContext';
-import FetchGithubUserByLogin from "./components/FetchGithubUserByLogin";
+import FlexContainer from './components/FlexContainer';
+import GenerateReviewerScreen from './components/GenerateReviewerScreen';
+import SettingsComponent from './components/SettingsComponent';
 
 function App() {
 
@@ -10,8 +12,12 @@ function App() {
     <>
       <UserContextProvider>
         <BlackListContextProvider>
-          <FetchGithubUserByLogin/>
-          <BlackList />
+          <RepoContextProvider>
+            <FlexContainer>
+              <SettingsComponent />
+              <GenerateReviewerScreen />
+            </FlexContainer>
+          </RepoContextProvider>
         </BlackListContextProvider>
       </UserContextProvider>
     </>
