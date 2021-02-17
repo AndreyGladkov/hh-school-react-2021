@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {Name, Photo} from './'
 
-function Card(props) {
+export function Card(props) {
+    useEffect(() => {
+        console.log(props);
+    })
     return (
         <div className="review_card">
-            <Photo />
-            <Name />
+            <Photo img={props.image}/>
+            <Name name={props.name}/>
         </div>
     );
 }
