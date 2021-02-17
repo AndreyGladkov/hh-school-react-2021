@@ -20,20 +20,13 @@ function App() {
         const blacklist = settings.blacklist.split(";");
         const urlRepo = `${URL_REPOS}/${settings.repo}/contributors`;
         const urlUser = `${URL_USERS}/${settings.login}`;
-        let contributors;
-        let user;
 
-        try {
-            contributors = await fetchAsync(urlRepo, "GET");
-        } catch {
-            alert("Bad repo name");
-            return;
-        }
+        let [contributors, user] = await Promise.all([
+            fetchAsync(urlRepo, "GET").catch((_) => alert("Bad repo name")),
+            fetchAsync(urlUser, "GET").catch((_) => alert("Bad login name")),
+        ]);
 
-        try {
-            user = await fetchAsync(urlUser, "GET");
-        } catch {
-            alert("Bad login name");
+        if (!contributors || !user) {
             return;
         }
 
