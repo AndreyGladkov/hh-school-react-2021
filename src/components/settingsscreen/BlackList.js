@@ -7,7 +7,7 @@ const BlackList = () => {
     const { blacklist, setBlacklist } = useContext(BlackListContext)
     const [loginForBlacklist, setLoginForBlacklist] = useState("")
 
-    const RemoveElementFromBlacklist = (login) => {
+    const removeElementFromBlacklist = (login) => {
         setBlacklist(blacklist.filter(element => element !== login));
     }
 
@@ -36,8 +36,7 @@ const BlackList = () => {
                         <BlackListComponent
                             key = {login} 
                             login = {login} 
-                            index = {index} 
-                            RemoveElementFromBlacklist = {RemoveElementFromBlacklist}
+                            removeElementFromBlacklist = {removeElementFromBlacklist}
                         />)
                 })}
             </div>}

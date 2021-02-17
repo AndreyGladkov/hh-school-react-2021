@@ -25,7 +25,7 @@ const GenerateReviewerComponent = () => {
     }
 
     if (!selectedRepo || !selectedRepo.contributors) {
-        return <></>
+        return null;
     }
 
     if (!potentialReviewers || potentialReviewers.length === 0) {

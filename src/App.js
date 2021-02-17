@@ -7,7 +7,6 @@ import Layout from './components/Layout';
 
 function App() {
   return (
-    <>
       <UserContextProvider>
         <BlackListContextProvider>
           <RepoContextProvider>
@@ -15,7 +14,6 @@ function App() {
           </RepoContextProvider>
         </BlackListContextProvider>
       </UserContextProvider>
-    </>
   );
 }
 

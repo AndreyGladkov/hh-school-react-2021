@@ -27,14 +27,14 @@ const SelectFromGivenReposComponent = () => {
 
     return (
         <div style = {{color: "#4a4e4d", marginBottom: "20px"}}>
-            {githubUserData && githubUserData.repos &&
+            {!!githubUserData?.repos && (
             <select value = {selectedRepo.repo.name} onChange = {(event) => updateSelectedRepo(event.currentTarget.value)}>
                 <option value = ""></option>
                 {githubUserData.repos.map((repository) => {
                     return (
                         <option key = {repository.name} value = {repository.name} >{repository.name}</option>)   
                 })}
-            </select>}
+            </select>)}
         </div>
     )
 }
