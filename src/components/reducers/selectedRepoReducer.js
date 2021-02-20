@@ -16,7 +16,6 @@ const getSelectedRepoInitialState = () => {
 const initialState = getSelectedRepoInitialState();
 
 export function selectRepo(repoData) {
-    console.log(repoData);
     return {
         type: "SELECT_REPO",
         payload: repoData,
