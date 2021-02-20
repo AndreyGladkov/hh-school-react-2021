@@ -1,7 +1,7 @@
 const selectedRepoInitialState = {
     repo: {},
     error: "",
-    contibutors: [],
+    contributors: [],
     reviewer: {}
 }
 
@@ -21,15 +21,15 @@ export function selectedRepoReducer(state = getSelectedRepoInitialState(), actio
             }
         case "SELECT_REVIEWER":
             return {
-                    ...state.selectedRepo,
+                    ...state,
                     reviewer: action.payload.reviewer
                 }
-        case "ERROR":
+        case "REPO_ERROR":
             return {
                 ...selectedRepoInitialState,
                 error: "Unknow repository"
             }
-        case "CLEAR":
+        case "REPO_CLEAR":
             return {...selectedRepoInitialState};
         default:
             return {...state}; 

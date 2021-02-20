@@ -1,12 +1,13 @@
-import React, {useContext} from 'react'
-import { RepoContext } from '../context/RepoContext';
+import React from 'react'
 import FlexContainer from '../util/FlexContainer';
+
+import { useSelector } from "react-redux"; 
 
 import "../../styles/styles.css"
 
 const SelectedReviewer = () => {
 
-    const { selectedRepo } = useContext(RepoContext);
+    const { selectedRepo } = useSelector(state => state.selectedRepo);
 
     return (
         !!selectedRepo?.reviewer?.login && (

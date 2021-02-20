@@ -1,41 +1,31 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { RepoContext } from '../context/RepoContext';
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 
 import "../../styles/styles.css"
 
 const GenerateReviewerComponent = () => {
 
-    const { selectedRepo, dispatchSelectedRepo } = useContext(RepoContext);
     const blacklist = useSelector(state => state.blacklist);
-
-    const selectedRepoState = useSelector(state => state.selectedRepo);
+    const selectedRepo = useSelector(state => state.selectedRepo);
     const dispatch = useDispatch();
 
     const [potentialReviewers, setPotentialReviewers] = useState();
 
-    /* useEffect(() => {
-        if (!!selectedRepoState?.contributors) {
-            const reviewers =  selectedRepoState.contributors.filter(contributor => 
-                (!blacklistState.map(item => item.toLowerCase()).includes(contributor.login.toLowerCase()) 
-                    && contributor.login !== selectedRepoState.repo.owner.login));
+    useEffect(() => {
+        if (!!selectedRepo?.contributors) {
+            const reviewers =  selectedRepo.contributors.filter(contributor => 
+                (!blacklist.map(item => item.toLowerCase()).includes(contributor.login.toLowerCase()) 
+                    && contributor.login !== selectedRepo.repo.owner.login));
             setPotentialReviewers(reviewers)
         }
-        console.log("Selcted repo state: ", selectedRepoState)
-        console.log("BlacklistState: ", blacklistState)
-    }, [selectedRepoState, blacklistState]) */
-
-    useEffect(() => {
-        if (!selectedRepo || !selectedRepo.contributors) return;
-        const reviewers =  selectedRepo.contributors.filter(contributor => 
-            (!blacklist.map(item => item.toLowerCase()).includes(contributor.login.toLowerCase()) 
-                && contributor.login !== selectedRepo.repo.owner.login));
-        setPotentialReviewers(reviewers);
+        console.log("Selcted repo state: ", selectedRepo)
+        console.log("blacklist: ", blacklist)
     }, [selectedRepo, blacklist])
+
 
     const generateReviewer = () => {
         const randomIndex = Math.floor(Math.random()*potentialReviewers.length);
-        dispatchSelectedRepo({type: "SELECT_REVIEWER", reviewer: potentialReviewers[randomIndex]});
+        dispatch({type: "SELECT_REVIEWER", payload: {reviewer: potentialReviewers[randomIndex]}})
     }
 
     if (!selectedRepo || !selectedRepo.contributors) {

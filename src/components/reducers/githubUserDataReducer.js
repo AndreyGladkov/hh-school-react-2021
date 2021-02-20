@@ -18,12 +18,12 @@ export function githubUserDataReducer(state = getGithubUserDataInitialState(), a
                 repos: action.payload.repos,
                 error: ""
             }
-        case "ERROR":
+        case "USER_ERROR":
             return {
                 ...githubUserDataInitialState,
                 error: action.payload.error
             }
-        case "CLEAR":
+        case "USER_CLEAR":
             return {...githubUserDataInitialState}
         default:
             return {...state};

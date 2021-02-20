@@ -1,5 +1,4 @@
-import React, {useContext} from 'react'
-import { RepoContext } from '../context/RepoContext';
+import React from 'react'
 import { fetchWithError } from '../util/fetchWithErrorHandling';
 
 import { useSelector, useDispatch } from "react-redux";
@@ -7,7 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 const SelectFromGivenReposComponent = () => {
 
     const githubUserData = useSelector(state => state.githubUserData);
-    const { selectedRepo, dispatchSelectedRepo } = useContext(RepoContext);
+    const selectedRepo = useSelector(state => state.selectedRepo);
+    const dispatch = useDispatch();
 
     const getSelectedRepoFromList = (repoName) => {
         return githubUserData.repos.reduce((prevRepository, repository) => {
@@ -21,7 +21,7 @@ const SelectFromGivenReposComponent = () => {
         const repository = getSelectedRepoFromList(repoName)
         fetchWithError(repository.contributors_url)
             .then(contributorsData => {
-                dispatchSelectedRepo({type: "SELECT_REPO", repo: repository, contributors: contributorsData})
+                dispatch({type: "SELECT_REPO", payload: {repo: repository, contributors: contributorsData}})
             })
                 .catch((error) => console.log(error.message))
     }

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import {fetchWithError} from '../util/fetchWithErrorHandling'
 
 import { useSelector, useDispatch } from "react-redux";
@@ -13,23 +13,16 @@ const SelectUserComponent = () => {
     const [githubUser, setGithubUser] = useState();
 
     const valideUserInput = (githubUser) => {
-        if (githubUser === null || githubUser === "" || 
-            (githubUserData !== null && githubUser === githubUserData.login)
-        ) {return false;}
-        return true;
+        return githubUser && githubUser.toLowerCase() !== githubUserData?.user?.login.toLowerCase();
     }
-
-    useEffect(() => {
-        localStorage.setItem("githubUserData", JSON.stringify(githubUserData))
-    }, [githubUserData])
 
     async function fetchUserDataAsync() {
         if (!valideUserInput(githubUser)) return;
-        dispatch({type: "CLEAR"});
+        dispatch({type: "REPO_CLEAR"});
         const userData = 
             await fetchWithError("https://api.github.com/users/" + githubUser)
                     .catch(() => {
-                        dispatch({type: "ERROR", payload: {error: "Unknown login"}})
+                        dispatch({type: "USER_ERROR", payload: {error: "Unknown login"}})
                     });
         if (userData) {
             const reposData =  
