@@ -1,11 +1,12 @@
 import React, {useContext, useState} from 'react'
 import { RepoContext } from '../context/RepoContext';
-import { UserContext } from '../context/UserContext';
 import { fetchWithError } from '../util/fetchWithErrorHandling';
+
+import { useSelector, useDispatch } from "react-redux";
 
 const ManuallySelectRepositoryComponent = () => {
 
-    const { githubUserData } = useContext(UserContext);
+    const githubUserData = useSelector(state => state.githubUserData);
     const { selectedRepo, dispatchSelectedRepo } = useContext(RepoContext);
 
     const [repoName, setRepoName] = useState();

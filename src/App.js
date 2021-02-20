@@ -1,15 +1,21 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import RepoContextProvider from './components/context/RepoContext';
-import UserContextProvider from './components/context/UserContext';
 import Layout from './components/Layout';
 
+import {useSelector} from "react-redux";
+
 function App() {
+
+  const state = useSelector((state) => state)
+
+  useEffect(() => {
+    console.log(state)
+  }, [state])
+
   return (
-      <UserContextProvider>
         <RepoContextProvider>
           <Layout />
         </RepoContextProvider>
-      </UserContextProvider>
   );
 }
 

@@ -1,16 +1,17 @@
-import React, {useContext} from 'react'
-import { UserContext } from '../context/UserContext';
+import React from 'react'
 import FlexContainer from '../util/FlexContainer';
+
+import { useSelector } from "react-redux"; 
 
 import "../../styles/styles.css"
 
 const SelectedUser = () => {
 
-    const { githubUserData } = useContext(UserContext);
+    const githubUserData = useSelector(state => state.githubUserData);
 
     return (
         <FlexContainer flexDirection = "column" style = {{alignItems: "center"}}>
-            {githubUserData && githubUserData.user.login &&
+            {githubUserData?.user?.login &&
                 <>
                     <h3 className = "subTitle">Selected user</h3>
                     <FlexContainer flexDirection = "column" style = {{alignItems: "center"}}>

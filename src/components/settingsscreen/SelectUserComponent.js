@@ -1,14 +1,14 @@
-import React, {useContext, useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {fetchWithError} from '../util/fetchWithErrorHandling'
-import {UserContext} from "../context/UserContext";
-import { RepoContext } from '../context/RepoContext';
+
+import { useSelector, useDispatch } from "react-redux";
 
 import "../../styles/styles.css"
 
 const SelectUserComponent = () => {
 
-    const { githubUserData, dispatchGithubUserData } = useContext(UserContext);
-    const { dispatchSelectedRepo } = useContext(RepoContext);
+    const githubUserData = useSelector(state => state.githubUserData);
+    const dispatch = useDispatch();
 
     const [githubUser, setGithubUser] = useState();
 
@@ -19,17 +19,23 @@ const SelectUserComponent = () => {
         return true;
     }
 
+    useEffect(() => {
+        localStorage.setItem("githubUserData", JSON.stringify(githubUserData))
+    }, [githubUserData])
+
     async function fetchUserDataAsync() {
         if (!valideUserInput(githubUser)) return;
-        dispatchSelectedRepo({type: "CLEAR"});
+        dispatch({type: "CLEAR"});
         const userData = 
             await fetchWithError("https://api.github.com/users/" + githubUser)
-                    .catch(() => dispatchGithubUserData({type: "ERROR", error: "Unknown login"}));
+                    .catch(() => {
+                        dispatch({type: "ERROR", payload: {error: "Unknown login"}})
+                    });
         if (userData) {
             const reposData =  
                 await fetchWithError(userData.repos_url + "?per_page=100")
                             .catch(error => console.log(error.message));
-            dispatchGithubUserData({type: "FETCH_USER", user: userData, repos: reposData});
+            dispatch({type: "FETCH_USER", payload: {user: userData, repos: reposData}})
         }
     }
 
@@ -40,7 +46,7 @@ const SelectUserComponent = () => {
             <button type = "button"  onClick = {fetchUserDataAsync} className = "fetchUserBtn" >
                 Fetch User Data
             </button>
-            {<div style = {{color: "#fe8a71"}}>&#8203;{githubUser && githubUserData && githubUserData.error}</div>}
+            {<div style = {{color: "#fe8a71"}}>&#8203;{githubUser && githubUserData?.error}</div>}
         </div>
     )
 }
