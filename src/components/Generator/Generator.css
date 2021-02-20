@@ -1,0 +1,15 @@
+.Generator {
+
+}
+
+.Generator__list-contributors {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px 20px;
+}
+
+.Generator__list-contributor-element {
+    margin: 0 10px;
+}
