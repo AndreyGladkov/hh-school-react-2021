@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { BlackListContext } from '../context/BlackListContext';
 import { RepoContext } from '../context/RepoContext';
+import { useSelector, useDispatch } from "react-redux";
 
 import "../../styles/styles.css"
 
@@ -9,7 +10,15 @@ const GenerateReviewerComponent = () => {
     const { selectedRepo, dispatchSelectedRepo } = useContext(RepoContext);
     const { blacklist } = useContext(BlackListContext);
 
+    const [selectedRepoState, blacklistState] = useSelector((state) => [state.selectedRepo, state.blacklist]);
+    const dispatch = useDispatch();
+
     const [potentialReviewers, setPotentialReviewers] = useState();
+
+    useEffect(() => {
+        console.log("Selcted repo state: ", selectedRepoState)
+        console.log("BlacklistState: ", blacklistState)
+    }, [selectedRepoState, blacklistState])
 
     useEffect(() => {
         if (!selectedRepo || !selectedRepo.contributors) return;
