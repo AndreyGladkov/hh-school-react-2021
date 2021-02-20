@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { clearRepo } from '../reducers/selectedRepoReducer';
 import { fetchUserAsync, fetchReposAsync } from '../util/fetchUserAsync';
 
@@ -14,11 +14,15 @@ const SelectUserComponent = () => {
 
     const [githubUser, setGithubUser] = useState();
 
+    useEffect(() => {
+        localStorage.setItem("githubUserData", JSON.stringify(githubUserData))
+    }, [githubUserData])
+
     const valideUserInput = (githubUser) => {
         return githubUser && (!githubUserData?.user?.login || githubUser.toLowerCase() !== githubUserData.user.login.toLowerCase());
     }
 
-    async function fetchUserDataAsync() {
+    function fetchUserDataAsync() {
         if (!valideUserInput(githubUser)) return;
         dispatch(clearRepo());
         dispatch(fetchUserAsync(githubUser))

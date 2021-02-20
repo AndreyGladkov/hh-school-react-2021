@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import BlackListComponent from './BlackListComponent'
 
 import { useSelector, useDispatch } from "react-redux"
@@ -10,6 +10,10 @@ const BlackList = () => {
     const dispatch = useDispatch();
 
     const [loginForBlacklist, setLoginForBlacklist] = useState("");
+
+    useEffect(() => {
+        localStorage.setItem("blacklist", JSON.stringify(blacklist))
+    }, [blacklist])
 
     const removeElementFromBlacklist = (login) => {
         dispatch(removeLoginFromBlacklist({login}))

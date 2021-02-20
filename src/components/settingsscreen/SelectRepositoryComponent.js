@@ -1,12 +1,20 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import SelectFromGivenReposComponent from './SelectFromGivenReposComponent';
 import ManuallySelectRepositoryComponent from './ManuallySelectRepositoryComponent';
+
+import {useSelector} from "react-redux";
 
 import "../../styles/styles.css"
 
 const SelectRepositoryComponent = () => {
 
     const [selectFromGivenRepos, setSelectFromGivenRepos] = useState(true);
+
+    const selectedRepo = useSelector(state => state.selectedRepo)
+
+    useEffect(() => {
+        localStorage.setItem("selectedRepo", JSON.stringify(selectedRepo))
+    }, [selectedRepo])
 
     const switchSelection = (event) => {
         setSelectFromGivenRepos(event.target.value === "given")

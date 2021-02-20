@@ -11,7 +11,7 @@ const ManuallySelectRepositoryComponent = () => {
 
     const [repoName, setRepoName] = useState();
 
-    async function fetchRepoData() {
+    function fetchRepoData() {
         if (!repoName) return;
         dispatch(fetchRepoIfExists(githubUserData.user.login, repoName))
             .then(repo => dispatch(fetchRepoContributors(repo)))
