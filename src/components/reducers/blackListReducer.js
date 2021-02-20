@@ -7,10 +7,10 @@ const getBlackListInitialState = () => {
 export default function blackListReducer(state = getBlackListInitialState(), action) {
     switch(action.type) {
         case "ADD_LOGIN_TO_BLACKLIST": {
-            return [...state.blacklist, action.payload.login];
+            return [...state, action.payload.login];
         }
         case "REMOVE_LOGIN_FROM_BLACKLIST": {
-            return state.blacklist.filter(element => element !== action.payload.login)
+            return state.filter(element => element !== action.payload.login)
         }
         default:
             return state;

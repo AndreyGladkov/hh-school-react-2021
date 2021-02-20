@@ -1,19 +1,28 @@
-import React, {useState, useContext} from 'react'
+import React, {useState, useContext, useEffect} from 'react'
 import BlackListComponent from './BlackListComponent'
 import { BlackListContext } from '../context/BlackListContext'
 
+import { useSelector, useDispatch } from "react-redux"
+
 const BlackList = () => {
 
-    const { blacklist, setBlacklist } = useContext(BlackListContext)
-    const [loginForBlacklist, setLoginForBlacklist] = useState("")
+    const blacklist = useSelector((state) => state.blacklist);
+    const dispatch = useDispatch();
+
+    const [loginForBlacklist, setLoginForBlacklist] = useState("");
+
+    useEffect(() => {
+        localStorage.setItem("blacklist", JSON.stringify(blacklist));
+    }, [blacklist])
 
     const removeElementFromBlacklist = (login) => {
-        setBlacklist(blacklist.filter(element => element !== login));
+        dispatch({type: "REMOVE_LOGIN_FROM_BLACKLIST", payload: {login: login}})
     }
+
 
     const addLoginToBlackList = (login) => {
         if (login !== "" && !blacklist.map(item => item.toLowerCase()).includes(login.toLowerCase())) {
-            setBlacklist([...blacklist, login])
+            dispatch({type: "ADD_LOGIN_TO_BLACKLIST", payload: {login: login}})
         }
         setLoginForBlacklist("")
     } 
@@ -31,7 +40,7 @@ const BlackList = () => {
             </button>
             {blacklist && blacklist.length > 0 &&
             <div>
-                {blacklist.map((login, index) => {
+                {blacklist.map(login => {
                     return (
                         <BlackListComponent
                             key = {login} 

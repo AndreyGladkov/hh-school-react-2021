@@ -15,10 +15,16 @@ const GenerateReviewerComponent = () => {
 
     const [potentialReviewers, setPotentialReviewers] = useState();
 
-    useEffect(() => {
+    /* useEffect(() => {
+        if (!!selectedRepoState?.contributors) {
+            const reviewers =  selectedRepoState.contributors.filter(contributor => 
+                (!blacklistState.map(item => item.toLowerCase()).includes(contributor.login.toLowerCase()) 
+                    && contributor.login !== selectedRepoState.repo.owner.login));
+            setPotentialReviewers(reviewers)
+        }
         console.log("Selcted repo state: ", selectedRepoState)
         console.log("BlacklistState: ", blacklistState)
-    }, [selectedRepoState, blacklistState])
+    }, [selectedRepoState, blacklistState]) */
 
     useEffect(() => {
         if (!selectedRepo || !selectedRepo.contributors) return;
