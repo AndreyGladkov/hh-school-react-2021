@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import BlackListComponent from './BlackListComponent'
 
 import { useSelector, useDispatch } from "react-redux"
+import { addLoginToBlacklist, removeLoginFromBlacklist } from '../reducers/blackListReducer';
 
 const BlackList = () => {
 
@@ -11,13 +12,12 @@ const BlackList = () => {
     const [loginForBlacklist, setLoginForBlacklist] = useState("");
 
     const removeElementFromBlacklist = (login) => {
-        dispatch({type: "REMOVE_LOGIN_FROM_BLACKLIST", payload: {login: login}})
+        dispatch(removeLoginFromBlacklist({login}))
     }
-
 
     const addLoginToBlackList = (login) => {
         if (login !== "" && !blacklist.map(item => item.toLowerCase()).includes(login.toLowerCase())) {
-            dispatch({type: "ADD_LOGIN_TO_BLACKLIST", payload: {login: login}})
+            dispatch(addLoginToBlacklist({login}))
         }
         setLoginForBlacklist("")
     } 

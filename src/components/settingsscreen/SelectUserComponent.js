@@ -1,9 +1,11 @@
-import React, {useState} from 'react'
-import {fetchWithError} from '../util/fetchWithErrorHandling'
+import React, {useState} from 'react';
+import { clearRepo } from '../reducers/selectedRepoReducer';
+import { fetchUserAsync, fetchReposAsync } from '../util/fetchUserAsync';
 
 import { useSelector, useDispatch } from "react-redux";
 
 import "../../styles/styles.css"
+
 
 const SelectUserComponent = () => {
 
@@ -13,23 +15,15 @@ const SelectUserComponent = () => {
     const [githubUser, setGithubUser] = useState();
 
     const valideUserInput = (githubUser) => {
-        return githubUser && githubUser.toLowerCase() !== githubUserData?.user?.login.toLowerCase();
+        return githubUser && (!githubUserData?.user?.login || githubUser.toLowerCase() !== githubUserData.user.login.toLowerCase());
     }
 
     async function fetchUserDataAsync() {
         if (!valideUserInput(githubUser)) return;
-        dispatch({type: "REPO_CLEAR"});
-        const userData = 
-            await fetchWithError("https://api.github.com/users/" + githubUser)
-                    .catch(() => {
-                        dispatch({type: "USER_ERROR", payload: {error: "Unknown login"}})
-                    });
-        if (userData) {
-            const reposData =  
-                await fetchWithError(userData.repos_url + "?per_page=100")
-                            .catch(error => console.log(error.message));
-            dispatch({type: "FETCH_USER", payload: {user: userData, repos: reposData}})
-        }
+        dispatch(clearRepo());
+        dispatch(fetchUserAsync(githubUser))
+            .then(user => dispatch(fetchReposAsync(user)))
+                .then(() => console.log("asyncMiddleware"))
     }
 
     return (

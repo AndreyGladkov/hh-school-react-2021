@@ -7,7 +7,7 @@ import "../../styles/styles.css"
 
 const SelectedRepo = () => {
 
-    const { selectedRepo } = useSelector(state => state.selectedRepo)
+    const selectedRepo = useSelector(state => state.selectedRepo)
 
     return (
         !!selectedRepo?.repo?.name && ( 

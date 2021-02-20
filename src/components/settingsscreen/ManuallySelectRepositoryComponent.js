@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
-import { fetchWithError } from '../util/fetchWithErrorHandling';
 
 import { useSelector, useDispatch } from "react-redux";
+import { fetchRepoContributors, fetchRepoIfExists } from '../util/fetchRepoAsync';
 
 const ManuallySelectRepositoryComponent = () => {
 
@@ -13,15 +13,9 @@ const ManuallySelectRepositoryComponent = () => {
 
     async function fetchRepoData() {
         if (!repoName) return;
-        const repository = 
-            await fetchWithError("https://api.github.com/repos/" + githubUserData.user.login + "/" + repoName)
-                    .catch(() => dispatch({type: "REPO_ERROR"}));
-        if (repository) {
-            const contributorsData =  
-                await fetchWithError(repository.contributors_url)
-                            .catch(error => console.log(error.message));
-            dispatch({type: "SELECT_REPO", payload: {repo: repository, contributors: contributorsData}});
-        }
+        dispatch(fetchRepoIfExists(githubUserData.user.login, repoName))
+            .then(repo => dispatch(fetchRepoContributors(repo)))
+                .then(() => console.log("asyncMiddleware"))
     }
 
     return (

@@ -1,7 +1,7 @@
 import React from 'react'
-import { fetchWithError } from '../util/fetchWithErrorHandling';
 
 import { useSelector, useDispatch } from "react-redux";
+import { fetchGivenRepoData } from '../util/fetchRepoAsync';
 
 const SelectFromGivenReposComponent = () => {
 
@@ -18,12 +18,9 @@ const SelectFromGivenReposComponent = () => {
     }
 
     const updateSelectedRepo = (repoName) => {
-        const repository = getSelectedRepoFromList(repoName)
-        fetchWithError(repository.contributors_url)
-            .then(contributorsData => {
-                dispatch({type: "SELECT_REPO", payload: {repo: repository, contributors: contributorsData}})
-            })
-                .catch((error) => console.log(error.message))
+        const repo = getSelectedRepoFromList(repoName)
+        dispatch(fetchGivenRepoData(repo))
+            .then(() => console.log("asyncMiddleware"))
     }
 
     return (

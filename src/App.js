@@ -1,34 +1,21 @@
-import React, {useEffect} from 'react'
-import Layout from './components/Layout';
-
-import {useSelector} from "react-redux";
+import React, {useState} from 'react'
+import FlexContainer from './components/util/FlexContainer';
+import Header from './components/Header';
+import GenerateReviewerScreen from './components/resultscreen/GenerateReviewerScreen';
+import SettingsComponent from './components/settingsscreen/SettingsComponent';
 
 function App() {
 
-  const state = useSelector((state) => state)
-
-  useEffect(() => {
-    console.log("State: ", state)
-  }, [state])
-
-  useEffect(() => {
-    console.log("Set githubuserdata")
-    localStorage.setItem("githubUserData", JSON.stringify(state.githubUserData))
-  }, [state.githubUserData])
-
-  useEffect(() => {
-    console.log("Set blacklist")
-    localStorage.setItem("blacklist", JSON.stringify(state.blacklist))
-  }, [state.blacklist])
-
-  useEffect(() => {
-    console.log("Set repocontext")
-    localStorage.setItem("selectedRepo", JSON.stringify(state.selectedRepo))
-  }, [state.selectedRepo])
-
-  return (
-          <Layout />
-  );
+  const [showSettings, setShowSettings] = useState(true);
+    return (
+        <>
+            <Header setShowSettings = {setShowSettings} showSettings = {showSettings}/>
+            <FlexContainer>
+              {showSettings && <SettingsComponent />}
+              <GenerateReviewerScreen />
+            </FlexContainer>
+        </>
+    )
 }
 
 export default App;

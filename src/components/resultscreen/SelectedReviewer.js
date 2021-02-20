@@ -7,7 +7,7 @@ import "../../styles/styles.css"
 
 const SelectedReviewer = () => {
 
-    const { selectedRepo } = useSelector(state => state.selectedRepo);
+    const selectedRepo = useSelector(state => state.selectedRepo);
 
     return (
         !!selectedRepo?.reviewer?.login && (

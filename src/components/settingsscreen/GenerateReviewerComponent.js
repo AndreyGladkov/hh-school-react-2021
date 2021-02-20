@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 
 import "../../styles/styles.css"
+import { selectReviewer } from '../reducers/selectedRepoReducer';
 
 const GenerateReviewerComponent = () => {
 
@@ -18,17 +19,15 @@ const GenerateReviewerComponent = () => {
                     && contributor.login !== selectedRepo.repo.owner.login));
             setPotentialReviewers(reviewers)
         }
-        console.log("Selcted repo state: ", selectedRepo)
-        console.log("blacklist: ", blacklist)
     }, [selectedRepo, blacklist])
 
 
     const generateReviewer = () => {
         const randomIndex = Math.floor(Math.random()*potentialReviewers.length);
-        dispatch({type: "SELECT_REVIEWER", payload: {reviewer: potentialReviewers[randomIndex]}})
+        dispatch(selectReviewer(potentialReviewers[randomIndex]));
     }
 
-    if (!selectedRepo || !selectedRepo.contributors) {
+    if (!selectedRepo || Object.keys(selectedRepo.repo).length === 0 || !selectedRepo.contributors) {
         return null;
     }
 

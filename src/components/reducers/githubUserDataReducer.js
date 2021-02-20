@@ -5,23 +5,46 @@ const githubUserDataInitialState = {
 }
 
 const getGithubUserDataInitialState = () => {
+    if (localStorage.getItem("githubUserData") === "undefined") return githubUserDataInitialState;
     return JSON.parse(localStorage.getItem("githubUserData")) === null 
         ? githubUserDataInitialState   
         : JSON.parse(localStorage.getItem("githubUserData"));
 }
 
-export function githubUserDataReducer(state = getGithubUserDataInitialState(), action) {
-    switch (action.type) {
+const initialState = getGithubUserDataInitialState();
+
+export function fetchUserData(userData) {
+    return {
+        type: "FETCH_USER",
+        payload: userData,
+    }
+}
+
+export function fetchUserError(error) {
+    return {
+        type: "USER_ERROR",
+        payload: {error: error}
+    }
+}
+
+export function clearUserData() {
+    return {
+        type: "USER_CLEAR"
+    }
+}
+
+export function githubUserDataReducer(state = initialState, {type, payload}) {
+    switch (type) {
         case "FETCH_USER":
             return {
-                user: action.payload.user, 
-                repos: action.payload.repos,
+                user: payload.user, 
+                repos: payload.repos,
                 error: ""
             }
         case "USER_ERROR":
             return {
                 ...githubUserDataInitialState,
-                error: action.payload.error
+                error: payload.error
             }
         case "USER_CLEAR":
             return {...githubUserDataInitialState}
