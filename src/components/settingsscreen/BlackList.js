@@ -1,6 +1,5 @@
-import React, {useState, useContext, useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import BlackListComponent from './BlackListComponent'
-import { BlackListContext } from '../context/BlackListContext'
 
 import { useSelector, useDispatch } from "react-redux"
 
