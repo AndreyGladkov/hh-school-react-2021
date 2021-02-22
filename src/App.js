@@ -17,6 +17,7 @@ const loadSettingsLocalStorage = (defaultValue) => {
 }
 
 function Settings(props) {
+  const [settingsHide, setSettingsHide] = useState(true);
   const [innerData, setInnerData] = useState(props.settings)
 
   function handleChange(event) {
@@ -31,25 +32,46 @@ function Settings(props) {
     });
   }
 
-  if (props.hide) {
-    return null;
+  function handleSave() {
+    setSettingsHide(!settingsHide);
+    props.onSaveHandler(innerData);
   }
+  
+  function handleCancel() {
+    setSettingsHide(!settingsHide);
+    setInnerData(props.settings);
+  }
+
   return (
     <div className="settings">
-      <div>
-        login 
-        <input name="login" value={innerData.login} onChange={handleChange}/>
-      </div>
-      <div>
-        repo 
-        <input name="repo" value={innerData.repo} onChange={handleChange}/>
-      </div>
-      <div>
-        blackList 
-        <input name="blackList" value={innerData.blackList} onChange={handleChange}/>
-      </div>
-      <button onClick={(e) => {console.log(innerData); props.onSaveHandler(innerData)}}>Save to LocalStorage</button>
-      <button onClick={(e) => {setInnerData(props.settings); props.onSaveHandler()}}>Cancel</button>
+      <button className="btn" onClick={() => setSettingsHide(!settingsHide)}>Настройки</button>
+      {
+        !settingsHide
+        ? <div className="settings-form">
+          <div className="form-row">
+            <label className="form-label">login</label>
+            <input className="form-input" name="login" value={innerData.login} onChange={handleChange}/>
+            <div className="form-hint">login git-пользователя</div>
+          </div>
+          <div className="form-row">
+            <label className="form-label">repo</label>
+            <input className="form-input" name="repo" value={innerData.repo} onChange={handleChange}/>
+            <div className="form-hint">Название репозитория, принадлежащего git-пользователю</div>
+          </div>
+          <div className="form-row">
+            <label className="form-label">blackList</label>
+            <input className="form-input" name="blackList" value={innerData.blackList} onChange={handleChange}/>
+            <div className="form-hint">Пример: login1, login2, loginN</div>
+          </div>
+          <div className="form-row">
+            <div className="buttons">
+              <button className="btn" onClick={handleSave}>Сохранить</button>
+              <button className="btn" onClick={handleCancel}>Отменить</button>
+            </div>
+          </div>
+        </div>
+        : null
+      }
     </div>
   );
 }
@@ -58,21 +80,20 @@ function User(props) {
   if (props.user) {
     return (
       <div className="user">
-        <div className="user__name">{props.label}: {props.user.login}</div>
         <img width="200px" height="200px" className="user__avatar" src={props.user.avatar_url} alt="" />
+        <div className="user__name">{props.label}: {props.user.login}</div>
       </div>
     );
   } else {
     return (
       <div className="user">
-        {props.label} is null
+        {props.label}: не найден
       </div>
     );
   }
 }
 
 function App() {
-  const [settingsHide, setSettingsHide] = useState(true);
   const [settings, setSettings] = useState(loadSettingsLocalStorage({
     login: 'razikov',
     repo: 'hh-school-react-2021',
@@ -98,11 +119,12 @@ function App() {
       .catch((error) => console.error(error));
   }, [settings.login, user]);
 
-  function generate(owner, repo) {
-    if (!owner || !repo) {
+  function generateHandler() {
+    console.log('generate', !settings.login || !settings.repo)
+    if (!settings.login || !settings.repo) {
       return;
     }
-    fetch(`https://api.github.com/repos/${owner}/${repo}/contributors`)
+    fetch(`https://api.github.com/repos/${settings.login}/${settings.repo}/contributors`)
       .then((response) => response.json())
       .then((data) => {
         console.log('fetch contributors', data)
@@ -122,8 +144,7 @@ function App() {
       .catch((error) => console.error(error));
   }
 
-  function saveForm(data) {
-    setSettingsHide(!settingsHide);
+  function handleSaveSettings(data) {
     if (data) {
       saveSettingsLocalStorage(data)
       setSettings(data);
@@ -132,14 +153,20 @@ function App() {
 
   return (
     <div className="app">
-      <header className="header">
-        title Homework
-        <button onClick={() => setSettingsHide(!settingsHide)}>Settings</button>
-        <Settings hide={settingsHide} settings={settings} onSaveHandler={saveForm}/>
-      </header>
-      <button onClick={() => generate(settings.login, settings.repo)}>Find reviewer</button>
-      <User label={"user"} user={user}/>
-      <User label={"reviewer"} user={reviewer}/>
+      <div className="content-container">
+        <header className="header">
+          <h3 className="header__title">ДЗ по React без redux</h3>
+          <div className="header__fill"></div>
+          <div className="header__commands">
+            <button className="btn" onClick={generateHandler}>Найти проверяющего</button>
+            <Settings settings={settings} onSaveHandler={handleSaveSettings}/>
+          </div>
+        </header>
+        <main className="user-pair">
+          <User label={"Автор"} user={user}/>
+          <User label={"Проверяющий"} user={reviewer}/>
+        </main>
+      </div>
     </div>
   );
 }

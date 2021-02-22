@@ -1,18 +1,94 @@
 .app {
+  min-height: 100vh;
   text-align: center;
+  background-color: #282c34;
+  color: white;
+  display: flex;
+  justify-content: center;
 }
 
-.header {
-  background-color: #282c34;
-  /* min-height: 100vh; */
+.content-container {
+  max-width: 42em;
+  font: 14px/1.45 Arial, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
+.header__title {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+}
+
+.header__fill {
+  flex-grow: 1;
 }
 
 .app-link {
   color: #61dafb;
+}
+
+.settings-form {
+  position: absolute;
+  background-color:  #282c34;
+  right: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #545d6e;
+  box-shadow: 2px 2px 4px #545d6e;
+}
+
+.form-row {
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  text-align: start;
+}
+
+.form-hint {
+  text-align: start;
+  font-size: 0.75rem;
+  color: #bbb;
+}
+
+.form-input {
+  padding: .375rem .75rem
+}
+
+.header__commands {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  position: relative;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  margin: 0 .5rem;
+}
+
+.user {
+  padding: 1rem;
+}
+
+.user-pair {
+  display: flex;
+  padding-top: 30px;
+}
+
+@media (max-width: 767px) {
+  .user-pair {
+    flex-direction: column;
+  }
 }
