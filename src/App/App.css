@@ -27,45 +27,6 @@
   font-size: 1.5rem;
 }
 
-.header__fill {
-  flex-grow: 1;
-}
-
-.app-link {
-  color: #61dafb;
-}
-
-.settings-form {
-  position: absolute;
-  background-color:  #282c34;
-  right: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #545d6e;
-  box-shadow: 2px 2px 4px #545d6e;
-}
-
-.form-row {
-  padding: 0.5rem 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.form-label {
-  text-align: start;
-}
-
-.form-hint {
-  text-align: start;
-  font-size: 0.75rem;
-  color: #bbb;
-}
-
-.form-input {
-  padding: .375rem .75rem
-}
-
 .header__commands {
   display: flex;
   flex-direction: row;
@@ -76,10 +37,6 @@
 .btn {
   padding: 0.5rem 1rem;
   margin: 0 .5rem;
-}
-
-.user {
-  padding: 1rem;
 }
 
 .user-pair {
