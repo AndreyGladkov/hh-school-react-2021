@@ -1,6 +1,20 @@
 import './App.css';
 import { useEffect, useState } from 'react';
+const keySettings = 'savedSettings';
+const localStorage = window.localStorage;
 
+const saveSettingsLocalStorage = (value) => {
+  localStorage.setItem(keySettings, JSON.stringify(value));
+}
+
+const loadSettingsLocalStorage = (defaultValue) => {
+  let rawValue = localStorage.getItem(keySettings);
+  if (!rawValue) {
+      localStorage.setItem(keySettings, JSON.stringify(defaultValue));
+      return defaultValue;
+  }
+  return JSON.parse(rawValue);
+}
 
 function Settings(props) {
   const [innerData, setInnerData] = useState(props.settings)
@@ -45,7 +59,7 @@ function User(props) {
     return (
       <div className="user">
         <div className="user__name">{props.label}: {props.user.login}</div>
-        <img className="user__avatar" src={props.user.avatar_url} alt="" />
+        <img width="200px" height="200px" className="user__avatar" src={props.user.avatar_url} alt="" />
       </div>
     );
   } else {
@@ -59,11 +73,11 @@ function User(props) {
 
 function App() {
   const [settingsHide, setSettingsHide] = useState(true);
-  const [settings, setSettings] = useState({
-    login: 'yiisoft',
-    repo: 'yii2',
+  const [settings, setSettings] = useState(loadSettingsLocalStorage({
+    login: 'razikov',
+    repo: 'hh-school-react-2021',
     blackList: ''
-  })
+  }));
   const [user, setUser] = useState(null);
   const [reviewer, setReviewer] = useState(null);
   
@@ -75,8 +89,8 @@ function App() {
     fetch(`https://api.github.com/users/${settings.login}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
-        // если пришло что-то другое, то мы уйдет в бесконечный цикл обновлений
+        console.log('fetch user', data)
+        // если пришло что-то другое, то без проверки мы уйдем в бесконечный цикл обновлений
         if (data.login === settings.login) {
           setUser(data);
         }
@@ -91,12 +105,19 @@ function App() {
     fetch(`https://api.github.com/repos/${owner}/${repo}/contributors`)
       .then((response) => response.json())
       .then((data) => {
+        console.log('fetch contributors', data)
+        if (!data?.length > 0) {
+          return;
+        }
         const filtered = data
-          // .filter(item => item.login !== owner)
-          .filter(item => !settings.blackList.split(',').map(blackItem => blackItem.trim()).includes(item.login))
-        const length = filtered ? filtered.length : 0;
-        const randomIndex = Math.floor(Math.random() * length);
-        setReviewer(filtered[randomIndex]);
+          .filter(item => !settings.blackList
+            .split(',').map(blackItem => blackItem.trim())
+            .includes(item.login)
+          )
+        if (filtered && filtered.length > 0) {
+          const randomIndex = Math.floor(Math.random() * filtered.length);
+          setReviewer(filtered[randomIndex]);
+        }
       })
       .catch((error) => console.error(error));
   }
@@ -104,10 +125,8 @@ function App() {
   function saveForm(data) {
     setSettingsHide(!settingsHide);
     if (data) {
-      // @todo сохранить в LocalStorage
-      setSettings((state) => {
-        return {...state, ...data};
-      });
+      saveSettingsLocalStorage(data)
+      setSettings(data);
     }
   }
 
