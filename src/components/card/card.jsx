@@ -6,8 +6,8 @@ export function Card(props) {
         console.log(props);
     })
     return (
-        <div className="review_card">
-            <Photo img={props.image}/>
+        <div className="review_card" onClick={()=> {if (props.onClick) {props.onClick(props.name)}}}>
+            <Photo image={props.image}/>
             <Name name={props.name}/>
         </div>
     );

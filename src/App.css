@@ -1,5 +1,8 @@
+html,
+body,
+#root,
 .App {
-  text-align: center;
+  height: 100%;
 }
 
 .App-logo {
@@ -12,7 +15,68 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+ul {
+  list-style-type: none;
+  padding: 5px;
+}
 
+li {
+  padding: 10px;
+}
+.content {
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+#button-help {
+  position: absolute;
+  top: 10px;
+  left: 200px;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  height: 30px;
+  width: 150px;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  outline: none;
+  color: white;
+}
+#help {
+  border-radius: 15px;
+  border-color: white;
+  border-width: medium;
+  border-style: double;
+  padding: 15px;
+  margin: auto 15px;
+  position: absolute;
+  top: 40px;
+  left: 0px;
+  text-align: left;
+  font-size: small;
+  background-color: #282c34;
+  color: white;
+}
+#settings-button {
+  position: absolute;
+  top: 10px;
+  left: 30px;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  height: 30px;
+  width: 150px;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  outline: none;
+  color: white;
+}
+
+button:active {
+  background-color: rgba(0, 0, 0, 0.3);
+}
 .wrapper {
   background-color: #282c34;
   min-height: 100vh;
@@ -28,6 +92,11 @@
 }
 .content {
   flex: 1;
+}
+
+.image {
+  height: 200px;
+  width: auto;
 }
 
 .App-link {
