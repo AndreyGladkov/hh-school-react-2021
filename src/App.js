@@ -7,19 +7,34 @@ import { About } from './help';
 import { getContributors } from './api/contributors';
 import { useSpring, animated } from 'react-spring'
 import { delay } from 'delay'
+import { getRandomArbitrary } from './consts'
+import { render } from '@testing-library/react';
 
 function App() {
   const [users, setUsers] = useState(null);
   const [isSettings, setSettingsVisible] = useState(null);
-  const [settings, setSettings] = useState({ blacklist: [], user: '', repo: '' });
+  const [isAbout, setAbout] = useState(false);
+  const [settings, setSettingsRaw] = useState({ blacklist: [], user: '', repo: '' });
+  const [blacklist, setBlacklist] = useState([]);
+  const [user, setUser] = useState('');
+  const [repo, setrepo] = useState('');
   async function handleUsersFetch(repo) {
     setUsers(await getContributors(repo));
     return;
   }
-  function handleSettingsFetch() {
+  function setSettings(obj, forceRepo = false) {
+    if (forceRepo) {
+      handleUsersFetch(obj.repo)
+    }
+    setSettingsRaw(obj);
+    saveSettings(obj)
+    setUser(obj.user);
+    setrepo(obj.repo);
+    Array.isArray(obj.blacklist) ? setBlacklist([...obj.blacklist]) : setBlacklist([]);
+  }
+  function handleSettings() {
     let st = getSettings();
     setSettings(st);
-    console.log(st);
     handleUsersFetch(st.repo);
     return;
   }
@@ -39,45 +54,68 @@ function App() {
       });
     },
   });
+  function addToBlack(val) {
+    let v = settings.blacklist.indexOf(val);
+    if (v < 0) {
+      let st = {};
+      st = settings;
+      st.blacklist.push(val);
+      setSettings(st);
+    }
+  }
+  function deleteFromBlackList(user) {
+    let v = settings.blacklist.indexOf(user);
+    let st = settings;
+    if (v >= 0) {
+      st.blacklist.splice(v, 1);
+      setSettings(st);
+    }
+  }
+  function changeReviewer(user) { let st = { user: user, repo: settings.repo, blacklist: settings.blacklist }; setSettings(st); }
+  function randomReviewer() {
+    let usersToRandomize = users.filter((element) => { return settings.blacklist.find(t => t == element.login) ? false : true; });
+    if (usersToRandomize.length > 0) {
+      let random = getRandomArbitrary(0, usersToRandomize.length);
+      changeReviewer(usersToRandomize[random].login);
+    } else {
+      alert("Нет пользователей для review! Проверьте настройки...");
+    }
+  }
   useEffect(() => {
-    handleSettingsFetch();
+    handleSettings();
     return;
   }, []); // onClick={(state) => {state ? setSettingsVisible(false) : setSettingsVisible(true);}}
   return (
     <div className="App">
+      <div className="buttons">
+        <ButtonSettings text='Настройки' onClick={() => { isSettings ? setSettingsVisible(false) : setSettingsVisible(true); }} />
+        <ButtonSettings text='Рандомный reviewer' onClick={() => { randomReviewer() }} />
+        <ButtonSettings text='Задание' onClick={() => {
+          isAbout ? setAbout(false) : setAbout(true);
+        }} />
+      </div>
       <div className="wrapper">
-        <ButtonSettings onClick={() => { isSettings ? setSettingsVisible(false) : setSettingsVisible(true); }} />
-        <About />
+        <About isAbout={isAbout} />
         <animated.div className="sidebar">
+          <Card black={blacklist.find(t => t == user) ? true : false}
+            name={user}
+            image={Array.isArray(users) ? (users.find(t => t.login == user) ? users.find(t => t.login == user).avatar_url : '') : ''}
+          />
           <animated.div style={{ ...style, display: isSettings ? 'block' : 'none' }}>
-            <Settings blacklist={settings.blacklist} user={settings.user} repo={settings.repo}
+            <Settings blacklist={[...blacklist]} user={user} repo={repo}
               onNewReviewer={() => {
                 handleUsersFetch(settings.repo);
               }}
-              onSaveSettings={(settings) => { setSettings(settings); saveSettings(settings) }}
-              onAdd={(val) => {
-                let v = settings.blacklist.indexOf(val);
-                if (v < 0) {
-                  let st = {};
-                  st.blacklist = settings.blacklist;
-                  st.push(val);
-                  setSettings(st);
-                  saveSettings(st)
-                }
-              }}
-              onDelete={(val) => {
-                let v = settings.blacklist.indexOf(val);
-                if (v >= 0) {
-                  settings.blacklist.splice(v, 1);
-                  setSettings(settings);
-                  saveSettings(settings)
-                }
-              }} />
+              onChangeRepo = {(repo) => {setrepo(repo)}}
+              clearAll = {() => { setSettings({user: user, repo: repo, blacklist: []})}}
+              onSaveSettings={(settings) => { setSettings(settings, true); }}
+              onAdd={addToBlack}
+              onDelete={deleteFromBlackList} />
           </animated.div>
         </animated.div>
         <div className="content">
           {Array.isArray(users) ? users.map((value) => {
-            return <Card key={value.id} name={value.login} image={value.avatar_url} onClick={(user) => { let settings = { user: user }; setSettings(settings); saveSettings(settings) }} />
+            return <Card black={[...blacklist].find(t => t == value.login) ? true : false} key={value.id} name={value.login} image={value.avatar_url} onBlackList={addToBlack} onRemoveBl={deleteFromBlackList} onClick={changeReviewer} />
           }) : ''}
         </div>
       </div>

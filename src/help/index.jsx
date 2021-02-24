@@ -5,11 +5,8 @@ import { useSpring, animated } from 'react-spring'
 import { delay } from 'delay'
 
 export function About(props) {
-    const [isAbout, setAbout] = useState(false);
     const style = useSpring({
-        //config: config.slow,
-        //unique,
-        display: isAbout ? 'block' : 'none',
+        display: props.isAbout ? 'block' : 'none',
         to: async next => {
             await next({
                 transform: 'translateX(0%)',
@@ -25,11 +22,7 @@ export function About(props) {
     return (
 
         <>
-            <button id='button-help' onClick={() => { 
-                isAbout ? setAbout(false) : setAbout(true); 
-                if (props.onClick) { props.onClick(isAbout ? false : true) }
-             }}>Задание</button>
-            <animated.div id='help' style={{...style, display: isAbout ? 'block' :'none' }}>
+            <animated.div id='help' style={{...style, display: props.isAbout ? 'block' :'none' }}>
                 <h1>Задание по React</h1>
                 <p>Нужно сделать одностраничное приложение, которое помогает найти ревьюера.</p>
                 <p>Функционал:</p>
