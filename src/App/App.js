@@ -2,17 +2,17 @@ import './App.css';
 import { useState } from 'react';
 import getReviewerData from "../Utils/getReviewerData";
 import useGetAuthorData from "../Utils/useGetAuthorData";
-import { loadSettingsLocalStorage, saveSettingsLocalStorage } from "../Utils/localStorage";
+import useGetSettingsData from "../Utils/useGetSettingsData";
 import User from "../User";
 import Settings from "../Settings";
 
 function App() {
-  const [settings, setSettings] = useState(loadSettingsLocalStorage({
+  const [reviewer, setReviewer] = useState(null);
+  const [settings, setSettings] = useGetSettingsData({
     login: 'razikov',
     repo: 'hh-school-react-2021',
     blackList: ''
-  }));
-  const [reviewer, setReviewer] = useState(null);
+  });
   const author = useGetAuthorData(settings);
 
   function handleGenerate() {
@@ -20,10 +20,7 @@ function App() {
   }
 
   function handleSaveSettings(data) {
-    if (data) {
-      saveSettingsLocalStorage(data)
-      setSettings(data);
-    }
+    setSettings(data);
   }
 
   return (
