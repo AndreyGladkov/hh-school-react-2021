@@ -1,0 +1,22 @@
+.Reviewer-profile {
+    min-width: 50vw;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.Reviewer-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.Reviewer-name {
+
+}
+
+.Reviewer-avatar {
+    min-height: 300px;
+    max-height: 300px;
+}
