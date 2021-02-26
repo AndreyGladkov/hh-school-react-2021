@@ -31,12 +31,14 @@ const AppComponent = () => {
 
       setReviewers(newReviewers);
     }
+
+    return true;
   };
 
   const getRandomReviewer = () => {
     if (settings[2]) setBlocklist(settings[2].split(','));
     if (!reviewers) {
-      return { name: '', avatar_url: '' };
+      return { name: 'Загрузка...', avatar_url: '' };
     }
 
     const reviewerList = reviewers.filter(

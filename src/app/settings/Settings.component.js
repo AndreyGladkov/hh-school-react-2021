@@ -40,8 +40,8 @@ const SettingsComponent = (prop) => {
               id="loginInput"
               className="InputForm-Field"
               type="text"
-              value={settings[0] || login}
-              placeholder={settings[0] || login}
+              value={login}
+              placeholder="Input login"
               onChange={(e) => setLogin(e.target.value)}
             />
           </label>
@@ -51,8 +51,8 @@ const SettingsComponent = (prop) => {
               id="repoInput"
               className="InputForm-Field"
               type="text"
-              value={settings[1] || repo}
-              placeholder={settings[1] || repo}
+              value={repo}
+              placeholder="Input repo"
               onChange={(e) => setRepo(e.target.value)}
             />
           </label>
@@ -62,8 +62,8 @@ const SettingsComponent = (prop) => {
               id="blocklistInput"
               className="InputForm-Field"
               type="text"
-              value={settings[2] || blocklist}
-              placeholder={settings[2] || blocklist}
+              value={blocklist}
+              placeholder="Input placeholder"
               onChange={(e) => setBlocklist(e.target.value)}
             />
           </label>
