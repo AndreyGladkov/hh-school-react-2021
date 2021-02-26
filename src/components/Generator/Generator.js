@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { animate, easeOut, linear } from '../../anime';
-import { apiGithub } from '../../api/apiGithub';
+import { connect } from 'react-redux';
+import { animate, linear } from '../../anime';
+import { githubApiThunkCreators } from '../../strore/reducers/githubApi';
+import selector from '../../strore/selector';
 import CardUser from './CardUser/CardUser';
 
 import "./Generator.css";
 
-const Generator = ({ loginUser, fullnameRepo, blacklist }) => {
-    const [errorMessage, setErrorMessage] = useState("");
-
+const Generator = ({ 
+    loginUser, fullnameRepo, blacklist,
+    avatarUrl, contributors, errorMessage,
+    changeAvatarUrl, changeContributors
+}) => {
     const [reviewer, setReviewer] = useState(null);
-    const [avatarUser, setAvatarUser] = useState();
-    const [contributors, setContributors] = useState([]);
 
     const [activeIndex, setActiveIndex] = useState(-1);
     const [isDisableGenerate, setIsDisableGenerate] = useState(false);
@@ -36,20 +38,12 @@ const Generator = ({ loginUser, fullnameRepo, blacklist }) => {
         });
     }
 
-    useEffect(async () => {
-        try {
-            const avatarUrl = await apiGithub.getAvatarUrl(loginUser);
-            setAvatarUser(avatarUrl);
-            setErrorMessage("");
-        } catch (e) {
-            setErrorMessage(e.message);
-        }
+    useEffect(() => {
+        changeAvatarUrl(loginUser);
     }, [loginUser]);
 
-    useEffect(async () => {
-        let contributors = await apiGithub.getContributors(fullnameRepo);
-        contributors = contributors.filter(({ login }) => login !== loginUser && !blacklist.includes(login));
-        setContributors(contributors);
+    useEffect(() => {
+        changeContributors(fullnameRepo, blacklist, loginUser);
     }, [loginUser, fullnameRepo, blacklist]);
 
     return (
@@ -60,7 +54,7 @@ const Generator = ({ loginUser, fullnameRepo, blacklist }) => {
                     ? errorMessage
                     : <CardUser
                         login={loginUser}
-                        avatarUrl={avatarUser}
+                        avatarUrl={avatarUrl}
                     />
             }
 
@@ -100,4 +94,19 @@ const Generator = ({ loginUser, fullnameRepo, blacklist }) => {
     )
 }
 
-export default Generator;
+const mapStateToProps = (state) => ({
+    avatarUrl: selector.getAvatarUrl(state),
+    contributors: selector.getContibutors(state),
+    errorMessage: selector.getErrorMessage(state)
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    changeAvatarUrl(loginUser) {
+        dispatch(githubApiThunkCreators.changeAvatarUrl(loginUser));
+    },
+    changeContributors(fullnameRepo, blacklist, loginUser){
+        dispatch(githubApiThunkCreators.changeContributors(fullnameRepo, blacklist, loginUser));
+    }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Generator);
