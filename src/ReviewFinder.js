@@ -1,50 +1,59 @@
-import React, {useState} from 'react';
-import Reviewer from './Reviewer';
+import React, {useState, useEffect} from 'react';
+import User from './User';
 
 const BASE_URL = 'https://api.github.com';
 
-async function findContributors(repo) {
-  const response = await fetch(`${BASE_URL}/repos/${repo}/contributors`);
+async function getRequest(url) {
+  const response = await fetch(url);
   if (!response.ok) {
-    throw Error('Request repo contriubors error');
+    if (response.status == 404) {
+      throw Error('Not found');
+    }
+    throw Error('Request error');
   }
   return await response.json();
 }
 
-async function findUser(username) {
-  const response = await fetch(`${BASE_URL}/users/${username}`);
-  if (!response.ok) {
-    throw Error('Request user contriubors error');
-  }
-  const user = await response.json();
-  console.log(user);
-  return user;
-}
-
 function chooseReviewer(contributors, blackList = []) {
   const filtered = contributors.filter(({login}) => !blackList.includes(login));
-  return filtered[Math.floor(Math.random() * filtered.length)];
+  const choosen = filtered[Math.floor(Math.random() * filtered.length)];
+  if (!choosen) {
+    throw Error('Reviewer not found');
+  }
+  return choosen;
 }
 
 function ReviewerFinder(props) {
   const [reviewer, setReviewer] = useState(null);
-  const [error, setError] = useState(null);
+  const [reviewerError, setReviewerError] = useState(null);
   const [user, setUser] = useState(null);
+  const [userError, setUserError] = useState(null);
 
   const onFindHandler = async () => {
+    console.log('find');
     try {
-      const reviewer = (await findContributors(props.settings.repo));
+      const reviewer = (await getRequest(`${BASE_URL}/repos/${props.settings.repo}/contributors`));
       const choosen = chooseReviewer(reviewer, [props.settings.login, ...props.settings.blackList]);
-      const user = await findUser(props.settings.login);
       setReviewer(choosen);
-      setUser(user);
-      setError(null);
+      setReviewerError(null);
     } catch (error) {
-      setError(error.message);
+      setReviewerError(error.message);
     }
   }
 
-  const errorStyle = {color: 'red'};
+  useEffect(async () => {
+    if (!props.settings.login) {
+      return;
+    }
+    try {
+      const user = await getRequest(`${BASE_URL}/users/${props.settings.login}`);
+      setUser(user);
+      setUserError(null);
+    } catch (error) {
+      console.error('error');
+      setUserError(error.message)
+    }
+  }, [props.settings.login]);
 
   return (
     <div>
@@ -53,19 +62,8 @@ function ReviewerFinder(props) {
       </div>
       <div>
         <button onClick={onFindHandler}>{reviewer ? "Refind" : "Find"} reviewer</button>
-        {!error ?
-          reviewer && user && <div>
-          <div>
-            <h2>Reviewer</h2>
-            <Reviewer reviewer={reviewer} />
-          </div>
-          <div>
-            <h2>Git user</h2>
-            <Reviewer reviewer={user} />
-          </div>
-        </div> :
-          <div style={errorStyle}>{error}</div>
-        }
+        <User user={reviewer} title="Reviewer" error={reviewerError} />
+        <User user={user} title="Git user" error={userError} />
       </div>
     </div>);
 }

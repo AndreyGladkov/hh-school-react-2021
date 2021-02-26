@@ -1,25 +1,17 @@
 import './App.css';
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import Settings from './Settings';
 import ReviewerFinder from './ReviewFinder';
+import useStateSettings from './useStateSettings';
 
 function App() {
   const [showSettings, setShowSettings] = useState(false);
-  const [settings, setSettings] = useState({login: "", repo: "", blackList: []});
-
-  useEffect(() => {
-    localStorage.getItem('settings') &&
-      setSettings(JSON.parse(localStorage.getItem('settings')));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('settings', JSON.stringify(settings));
-  }, [settings]);
+  const [settings, setSettings] = useStateSettings({login: "", repo: "", blackList: []});
 
   return (
     <div className="App">
       <header className="App-header">
-        <h1>{showSettings ? "Reviewer" : "Settings"}</h1>
+        <h1>{showSettings ? "Settings" : "Reviewer"}</h1>
       </header>
       <main>
         <button onClick={() => setShowSettings(!showSettings)}>{showSettings ? "Hide" : "Show"} settings</button>
