@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import './Settings.css';
 
 const SettingsComponent = (prop) => {
   const { settings, setSettings } = prop;
   const [login, setLogin] = useState('');
   const [repo, setRepo] = useState('');
   const [blocklist, setBlocklist] = useState('');
+  const [isHidden, setHidden] = useState(false);
 
   useEffect(() => {
     setLogin(settings[0]);
@@ -17,38 +19,61 @@ const SettingsComponent = (prop) => {
     setSettings([login, repo, blocklist]);
   };
 
+  const toggleVisibility = () => {
+    setHidden(!isHidden);
+  };
+
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="loginInput">
-          Login:
+      <button
+        className="InputForm-Button"
+        onClick={toggleVisibility}
+        type="button"
+      >
+        {!isHidden ? 'Hide settings' : 'Show settings'}
+      </button>
+      {!isHidden && (
+        <form onSubmit={handleSubmit} className="InputForm">
+          <label htmlFor="loginInput">
+            Login:
+            <input
+              id="loginInput"
+              className="InputForm-Field"
+              type="text"
+              value={settings[0] || login}
+              placeholder={settings[0] || login}
+              onChange={(e) => setLogin(e.target.value)}
+            />
+          </label>
+          <label htmlFor="repoInput">
+            Repo:
+            <input
+              id="repoInput"
+              className="InputForm-Field"
+              type="text"
+              value={settings[1] || repo}
+              placeholder={settings[1] || repo}
+              onChange={(e) => setRepo(e.target.value)}
+            />
+          </label>
+          <label htmlFor="blocklistInput">
+            Blocklist:
+            <input
+              id="blocklistInput"
+              className="InputForm-Field"
+              type="text"
+              value={settings[2] || blocklist}
+              placeholder={settings[2] || blocklist}
+              onChange={(e) => setBlocklist(e.target.value)}
+            />
+          </label>
           <input
-            id="loginInput"
-            type="text"
-            value={login}
-            onChange={(e) => setLogin(e.target.value)}
+            className="InputForm-Button"
+            type="submit"
+            value={repo ? 'Find reviewer' : 'Submit'}
           />
-        </label>
-        <label htmlFor="repoInput">
-          Repo:
-          <input
-            id="repoInput"
-            type="text"
-            value={repo}
-            onChange={(e) => setRepo(e.target.value)}
-          />
-        </label>
-        <label htmlFor="blocklistInput">
-          Blocklist:
-          <input
-            id="blocklistInput"
-            type="text"
-            value={blocklist}
-            onChange={(e) => setBlocklist(e.target.value)}
-          />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+        </form>
+      )}
     </div>
   );
 };

@@ -16,21 +16,28 @@ const AppComponent = () => {
   const [reviewers, setReviewers] = useState([]);
 
   const getUsersData = async () => {
-    if (settings[0] || settings[1]) {
+    if (settings[0]) {
       const newUser = await getData(`${USERS}/${settings[0]}`).then(
         (res) => res,
       );
+
+      setUser(newUser);
+    }
+
+    if (settings[1]) {
       const newReviewers = await getData(
         `${REPO}/${settings[0]}/${settings[1]}/contributors`,
       );
 
-      setUser(newUser);
       setReviewers(newReviewers);
     }
   };
 
   const getRandomReviewer = () => {
     if (settings[2]) setBlocklist(settings[2].split(','));
+    if (!reviewers) {
+      return { name: '', avatar_url: '' };
+    }
 
     const reviewerList = reviewers.filter(
       (rev) => !blocklist.includes(rev.login),
@@ -40,6 +47,7 @@ const AppComponent = () => {
       reviewerList[Math.floor(Math.random() * reviewerList.length)];
 
     setReviewer(randomReviewer);
+    return true;
   };
 
   useEffect(() => {
@@ -60,8 +68,12 @@ const AppComponent = () => {
       </header>
       <main className="App-main">
         <SettingsComponent settings={settings} setSettings={setSettings} />
-        {settings[0] && settings[1] ? (
-          <ReviewerContainer user={user} reviewer={reviewer} />
+        {settings[0] ? (
+          <ReviewerContainer
+            user={user}
+            reviewer={reviewer}
+            repo={settings[1]}
+          />
         ) : null}
       </main>
     </div>
