@@ -8,7 +8,7 @@ export function Settings(props) {
                 <tbody>
                     <tr>
                         <td>Логин ревьювера</td>
-                        <td><input placeholder="login" value={props.user} /></td>
+                        <td><input placeholder="login" defaultValue={props.user} readOnly={true} /></td>
                     </tr>
                     <tr>
                         <td>Ссылка на репозиторий</td>

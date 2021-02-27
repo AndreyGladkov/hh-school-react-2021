@@ -16,7 +16,6 @@ export function getSettings() {
     return settings;
 }
 export function setSettings(settings) {
-    console.log(settings);
     if (settings.user) localStorage.setItem(USERNAME, settings.user);
     if (settings.repo) localStorage.setItem(REPOSITORY, settings.repo);
     if (settings.blacklist) localStorage.setItem(BLACKLIST, JSON.stringify(settings.blacklist));
