@@ -8,7 +8,6 @@ import { getContributors } from './api/contributors';
 import { useSpring, animated } from 'react-spring'
 import { delay } from 'delay'
 import { getRandomArbitrary } from './consts'
-import { render } from '@testing-library/react';
 
 function App() {
   const [users, setUsers] = useState(null);
@@ -30,7 +29,7 @@ function App() {
     saveSettings(obj)
     setUser(obj.user);
     setrepo(obj.repo);
-    Array.isArray(obj.blacklist) ? setBlacklist([...obj.blacklist]) : setBlacklist([]);
+    setBlacklist(Array.isArray(obj.blacklist) ? [...obj.blacklist] : []);
   }
   function handleSettings() {
     let st = getSettings();
@@ -38,7 +37,6 @@ function App() {
     handleUsersFetch(st.repo);
     return;
   }
-  //    //unique,
   const style = useSpring({
     ...config.slow,
     state: isSettings ? 'in' : 'out',
@@ -84,30 +82,28 @@ function App() {
   useEffect(() => {
     handleSettings();
     return;
-  }, []); // onClick={(state) => {state ? setSettingsVisible(false) : setSettingsVisible(true);}}
+  }, []);
   return (
     <div className="App">
       <div className="buttons">
         <ButtonSettings text='Настройки' onClick={() => { isSettings ? setSettingsVisible(false) : setSettingsVisible(true); }} />
-        <ButtonSettings text='Рандомный reviewer' onClick={() => { randomReviewer() }} />
-        <ButtonSettings text='Задание' onClick={() => {
-          isAbout ? setAbout(false) : setAbout(true);
-        }} />
+        <ButtonSettings text='Рандомный reviewer' onClick={randomReviewer} />
+        <ButtonSettings text='Задание' onClick={() => { setAbout(!isAbout); }} />
       </div>
       <div className="wrapper">
         <About isAbout={isAbout} />
         <animated.div className="sidebar">
-          <Card black={blacklist.find(t => t == user) ? true : false}
+          <Card black={[...blacklist].includes(user)}
             name={user}
-            image={Array.isArray(users) ? (users.find(t => t.login == user) ? users.find(t => t.login == user).avatar_url : '') : ''}
+            image={users?.find?.(t => t.login == user)?.avatar_url}
           />
           <animated.div style={{ ...style, display: isSettings ? 'block' : 'none' }}>
             <Settings blacklist={[...blacklist]} user={user} repo={repo}
               onNewReviewer={() => {
                 handleUsersFetch(settings.repo);
               }}
-              onChangeRepo = {(repo) => {setrepo(repo)}}
-              clearAll = {() => { setSettings({user: user, repo: repo, blacklist: []})}}
+              onChangeRepo={(repo) => { setrepo(repo) }}
+              clearAll={() => { setSettings({ user: user, repo: repo, blacklist: [] }) }}
               onSaveSettings={(settings) => { setSettings(settings, true); }}
               onAdd={addToBlack}
               onDelete={deleteFromBlackList} />
@@ -115,8 +111,8 @@ function App() {
         </animated.div>
         <div className="content">
           {Array.isArray(users) ? users.map((value) => {
-            return <Card black={[...blacklist].find(t => t == value.login) ? true : false} key={value.id} name={value.login} image={value.avatar_url} onBlackList={addToBlack} onRemoveBl={deleteFromBlackList} onClick={changeReviewer} />
-          }) : ''}
+            return <Card black={[...blacklist].includes(value.login)} key={value.id} name={value.login} image={value.avatar_url} onBlackList={addToBlack} onRemoveBl={deleteFromBlackList} onClick={changeReviewer} />
+          }) : null}
         </div>
       </div>
     </div>

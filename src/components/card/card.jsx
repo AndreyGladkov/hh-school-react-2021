@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Name, Photo } from './'
 
 export function Card(props) {
-    useEffect(() => {
-    })
     return (
         <div className={`review_card ${props.black ? 'black_label' : ''}`}
         >
@@ -15,7 +13,7 @@ export function Card(props) {
                     {props.onBlackList && !props.black ? <button onClick={() => { if (props.onBlackList) { props.onBlackList(props.name) } }}>В черный список</button> : <></>}
                     {props.onRemoveBl && props.black ? <button onClick={() => { if (props.onRemoveBl) { props.onRemoveBl(props.name) } }}>Удалить из ЧС</button> : <></>}
                 </div>
-                : <></>
+                : null
             }
         </div>
     );
