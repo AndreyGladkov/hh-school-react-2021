@@ -71,7 +71,7 @@ function App() {
   }
   function changeReviewer(user) { let st = { user: user, repo: settings.repo, blacklist: settings.blacklist }; setSettings(st); }
   function randomReviewer() {
-    let usersToRandomize = users.filter((element) => { return settings.blacklist.find(t => t == element.login) ? false : true; });
+    let usersToRandomize = users.filter((element) => { return ![...blacklist].includes(element.login)});
     if (usersToRandomize.length > 0) {
       let random = getRandomArbitrary(0, usersToRandomize.length);
       changeReviewer(usersToRandomize[random].login);
@@ -86,7 +86,7 @@ function App() {
   return (
     <div className="App">
       <div className="buttons">
-        <ButtonSettings text='Настройки' onClick={() => { isSettings ? setSettingsVisible(false) : setSettingsVisible(true); }} />
+        <ButtonSettings text='Настройки' onClick={() => { setSettingsVisible(!isSettings) }} />
         <ButtonSettings text='Рандомный reviewer' onClick={randomReviewer} />
         <ButtonSettings text='Задание' onClick={() => { setAbout(!isAbout); }} />
       </div>
