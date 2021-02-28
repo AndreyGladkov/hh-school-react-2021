@@ -1,30 +1,48 @@
 import './Settings.css';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from "react-redux";
+import { setSettings } from "../redux/Settings";
 
 function Settings(props) {
   const [settingsHide, setSettingsHide] = useState(true);
-  const [innerData, setInnerData] = useState(props.settings)
+  const settings = useSelector(({ getSettings }) => getSettings);
+  const dispatch = useDispatch();
+  const login = useRef(null);
+  const repo = useRef(null);
+  const blackList = useRef(null);
+  const keySettings = 'savedSettings';
 
-  function handleChange(event) {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
+  useEffect(() => {
+    const rawValue = localStorage.getItem(keySettings);
+    if (rawValue) {
+      dispatch(setSettings(JSON.parse(rawValue)));
+    } else {
+      const initialState = {
+        login: 'razikov',
+        repo: 'hh-school-react-2021',
+        blackList: ''
+      };
+      dispatch(setSettings(initialState));
+    }
+  }, [dispatch])
 
-    setInnerData((state) => {
-      return {
-        ...state, [name]: value
-      }
-    });
-  }
+  useEffect(() => {
+    if (settings.login || settings.repo || settings.blackList) {
+      localStorage.setItem(keySettings, JSON.stringify(settings));
+    }
+  }, [settings])
 
   function handleSave() {
     setSettingsHide(!settingsHide);
-    props.onSaveHandler(innerData);
+    dispatch(setSettings({
+      login: login.current.value,
+      repo: repo.current.value,
+      blackList: blackList.current.value
+    }));
   }
   
   function handleCancel() {
     setSettingsHide(!settingsHide);
-    setInnerData(props.settings);
   }
 
   return (
@@ -35,17 +53,17 @@ function Settings(props) {
         ? <div className="settings-form">
           <div className="form-row">
             <label className="form-label">login</label>
-            <input className="form-input" name="login" value={innerData.login} onChange={handleChange}/>
+            <input className="form-input" name="login" ref={login} defaultValue={settings.login}/>
             <div className="form-hint">login git-пользователя</div>
           </div>
           <div className="form-row">
             <label className="form-label">repo</label>
-            <input className="form-input" name="repo" value={innerData.repo} onChange={handleChange}/>
+            <input className="form-input" name="repo" ref={repo} defaultValue={settings.repo}/>
             <div className="form-hint">Название репозитория, принадлежащего git-пользователю</div>
           </div>
           <div className="form-row">
             <label className="form-label">blackList</label>
-            <input className="form-input" name="blackList" value={innerData.blackList} onChange={handleChange}/>
+            <input className="form-input" name="blackList" ref={blackList} defaultValue={settings.blackList}/>
             <div className="form-hint">Пример: login1, login2, loginN</div>
           </div>
           <div className="form-row">

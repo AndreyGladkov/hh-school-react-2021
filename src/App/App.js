@@ -1,37 +1,42 @@
 import './App.css';
-import { useState } from 'react';
-import getReviewerData from "../Utils/getReviewerData";
-import useGetAuthorData from "../Utils/useGetAuthorData";
-import useGetSettingsData from "../Utils/useGetSettingsData";
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from "react-redux";
+import fetchAuthor from "../Utils/fetchAuthor";
+import fetchReviewer from "../Utils/fetchReviewer";
 import User from "../User";
 import Settings from "../Settings";
 
 function App() {
-  const [reviewer, setReviewer] = useState(null);
-  const [settings, setSettings] = useGetSettingsData({
-    login: 'razikov',
-    repo: 'hh-school-react-2021',
-    blackList: ''
-  });
-  const author = useGetAuthorData(settings);
+  const settings = useSelector(({ getSettings }) => getSettings);
+  const author = useSelector(({ getAuthor }) => getAuthor);
+  const reviewer = useSelector(({ getReviewer }) => getReviewer);
+  const responses = useSelector(({ getResponses }) => getResponses);
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    if (!settings.login || author?.login === settings.login) {
+      return;
+    }
+    dispatch(fetchAuthor(settings.login));
+  }, [dispatch, settings.login, author])
+
+  useEffect(() => {
+    console.log(responses);
+  }, [responses])
 
   function handleGenerate() {
-    getReviewerData(settings, setReviewer);
-  }
-
-  function handleSaveSettings(data) {
-    setSettings(data);
+    dispatch(fetchReviewer(settings));
   }
 
   return (
     <div className="app">
       <div className="content-container">
         <header className="header">
-          <h3 className="header__title">ДЗ по React без redux</h3>
+          <h3 className="header__title">ДЗ по React с redux</h3>
           <div className="header__fill"></div>
           <div className="header__commands">
             <button className="btn" onClick={handleGenerate}>Найти проверяющего</button>
-            <Settings settings={settings} onSaveHandler={handleSaveSettings}/>
+            <Settings settings={settings}/>
           </div>
         </header>
         <main className="user-pair">
