@@ -11,7 +11,7 @@ const ReviewerComponent = (prop) => {
         className="Reviewer-avatar"
         alt="Reviewer avatar"
       />
-      <p className="Reviewer-name">{name || ''}</p>
+      <p className="Reviewer-name">{name || 'Загрузка...'}</p>
     </div>
   );
 };

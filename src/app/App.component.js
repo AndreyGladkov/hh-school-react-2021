@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import SettingsComponent from './settings/Settings.component';
 import ReviewerContainer from './reviewers/ReviewerContainer.component';
@@ -15,57 +15,65 @@ const AppComponent = () => {
   const [blocklist, setBlocklist] = useState([]);
   const [reviewers, setReviewers] = useState([]);
 
-  const getUsersData = async () => {
-    if (settings[0]) {
-      const newUser = await getData(`${USERS}/${settings[0]}`).then(
-        (res) => res,
-      );
-
-      setUser(newUser);
-    }
-
-    if (settings[1]) {
-      const newReviewers = await getData(
-        `${REPO}/${settings[0]}/${settings[1]}/contributors`,
-      );
-
-      setReviewers(newReviewers);
-    }
-
-    return true;
-  };
-
-  const getRandomReviewer = () => {
+  const getRandomReviewer = useCallback(() => {
     if (settings[2]) setBlocklist(settings[2].split(','));
+
     if (!reviewers) {
-      return { name: 'Загрузка...', avatar_url: '' };
+      return { name: '', avatar_url: '' };
     }
 
     const reviewerList = reviewers.filter(
-      (rev) => !blocklist.includes(rev.login),
+      (filteredReviewers) => !blocklist.includes(filteredReviewers.login),
     );
 
     const randomReviewer =
       reviewerList[Math.floor(Math.random() * reviewerList.length)];
 
-    setReviewer(randomReviewer);
-    return true;
+    return setReviewer(randomReviewer || {});
+  }, [reviewers]);
+
+  const setUsersData = (newData) => {
+    const [newUser, newReviewers] = newData;
+
+    setUser(newUser);
+    setReviewers([...newReviewers]);
   };
 
+  const getUsersData = useCallback(async () => {
+    let newUser = {};
+    let newReviewers = [];
+
+    if (settings[0]) {
+      newUser = await getData(`${USERS}/${settings[0]}`).then((res) => res);
+    }
+
+    if (settings[1]) {
+      newReviewers = await getData(
+        `${REPO}/${settings[0]}/${settings[1]}/contributors`,
+      );
+    }
+
+    return setUsersData([newUser, newReviewers]);
+  }, [settings]);
+
   useEffect(() => {
-    setSettings(JSON.parse(storeSettings));
+    setSettings(JSON.parse(storeSettings) || '');
   }, []);
 
   useEffect(() => {
     getUsersData();
-    getRandomReviewer();
-    setStoreSettings(JSON.stringify(settings));
+
+    setStoreSettings(JSON.stringify(settings) || '');
   }, [settings]);
+
+  useEffect(() => {
+    getRandomReviewer();
+  }, [reviewers]);
 
   return (
     <div className="App">
       <header className="App-header">
-        <p className="header-element">memka</p>
+        <p className="header-element">hh react homework</p>
         <p className="header-element">meow :3</p>
       </header>
       <main className="App-main">
@@ -74,7 +82,7 @@ const AppComponent = () => {
           <ReviewerContainer
             user={user}
             reviewer={reviewer}
-            repo={settings[1]}
+            repo={settings[1]} // Вообще, можно, конечно, для репо и отдельный стейт завести, как минимум, для красоты
           />
         ) : null}
       </main>

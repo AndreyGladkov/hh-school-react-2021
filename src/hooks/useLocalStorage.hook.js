@@ -21,6 +21,7 @@ export default function useLocalStorage(key) {
     try {
       localStorage.setItem(key, currentValue);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
     }
   }, [key, currentValue]);
