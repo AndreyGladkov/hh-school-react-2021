@@ -1,42 +1,24 @@
+import { delay } from 'delay';
 import { useEffect, useState } from 'react';
-import { getSettings, setSettings as saveSettings } from './localSave'
-import { config } from 'react-spring';
-import './App.css';
-import { Card, Settings, ButtonSettings } from './components'
-import { About } from './help';
+import { useDispatch, useSelector } from 'react-redux';
+import { animated, config, useSpring } from 'react-spring';
 import { getContributors } from './api/contributors';
-import { useSpring, animated } from 'react-spring'
-import { delay } from 'delay'
-import { getRandomArbitrary } from './consts'
+import './App.css';
+import { ButtonSettings, Card, Settings } from './components';
+import { getRandomArbitrary } from './consts';
+import { About } from './help';
+import { addBlacklist, clearBlacklist, removeBlacklist, setRepo, setUser } from './store/actions/settingsActions';
 
 function App() {
-  const [users, setUsers] = useState(null);
+  const repo = useSelector((state) => { console.log(state); return state.settings.repo });
+  const user = useSelector((state) => state.settings.user)
+  const blacklist = useSelector((state) => state.settings.blacklist)
+  const users = useSelector((state) => state.users);
+  const dispatch = useDispatch();
+  //const [users, setUsers] = useState(null);
   const [isSettings, setSettingsVisible] = useState(null);
   const [isAbout, setAbout] = useState(false);
-  const [settings, setSettingsRaw] = useState({ blacklist: [], user: '', repo: '' });
-  const [blacklist, setBlacklist] = useState([]);
-  const [user, setUser] = useState('');
-  const [repo, setrepo] = useState('');
-  async function handleUsersFetch(repo) {
-    setUsers(await getContributors(repo));
-    return;
-  }
-  function setSettings(obj, forceRepo = false) {
-    if (forceRepo) {
-      handleUsersFetch(obj.repo)
-    }
-    setSettingsRaw(obj);
-    saveSettings(obj)
-    setUser(obj.user);
-    setrepo(obj.repo);
-    setBlacklist(Array.isArray(obj.blacklist) ? [...obj.blacklist] : []);
-  }
-  function handleSettings() {
-    let st = getSettings();
-    setSettings(st);
-    handleUsersFetch(st.repo);
-    return;
-  }
+
   const style = useSpring({
     ...config.slow,
     state: isSettings ? 'in' : 'out',
@@ -53,25 +35,16 @@ function App() {
     },
   });
   function addToBlack(val) {
-    let v = settings.blacklist.indexOf(val);
-    if (v < 0) {
-      let st = {};
-      st = settings;
-      st.blacklist.push(val);
-      setSettings(st);
-    }
+    dispatch(addBlacklist(val))
   }
   function deleteFromBlackList(user) {
-    let v = settings.blacklist.indexOf(user);
-    let st = settings;
-    if (v >= 0) {
-      st.blacklist.splice(v, 1);
-      setSettings(st);
-    }
+    dispatch(removeBlacklist(user));
   }
-  function changeReviewer(user) { let st = { user: user, repo: settings.repo, blacklist: settings.blacklist }; setSettings(st); }
+  function changeReviewer(user) {
+    dispatch(setUser(user));
+  }
   function randomReviewer() {
-    let usersToRandomize = users.filter((element) => { return ![...blacklist].includes(element.login)});
+    let usersToRandomize = users.filter((element) => { return ![...blacklist].includes(element.login) });
     if (usersToRandomize.length > 0) {
       let random = getRandomArbitrary(0, usersToRandomize.length);
       changeReviewer(usersToRandomize[random].login);
@@ -80,7 +53,7 @@ function App() {
     }
   }
   useEffect(() => {
-    handleSettings();
+    // handleSettings();
     return;
   }, []);
   return (
@@ -100,11 +73,18 @@ function App() {
           <animated.div style={{ ...style, display: isSettings ? 'block' : 'none' }}>
             <Settings blacklist={[...blacklist]} user={user} repo={repo}
               onNewReviewer={() => {
-                handleUsersFetch(settings.repo);
+                //handleUsersFetch(settings.repo);
               }}
-              onChangeRepo={(repo) => { setrepo(repo) }}
-              clearAll={() => { setSettings({ user: user, repo: repo, blacklist: [] }) }}
-              onSaveSettings={(settings) => { setSettings(settings, true); }}
+              onChangeRepo={(repo) => {
+                dispatch(setRepo(repo));
+              }}
+              clearAll={() => {
+                dispatch(clearBlacklist())
+              }}
+              onSaveSettings={(settings) => {
+                dispatch(setRepo(repo));
+
+              }}
               onAdd={addToBlack}
               onDelete={deleteFromBlackList} />
           </animated.div>

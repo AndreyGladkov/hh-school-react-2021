@@ -1,0 +1,11 @@
+export const SET_REPO = "SET_REPO"; 
+export const ADD_BLACKLIST = "ADD_BLACKLIST";
+export const REMOVE_BLACKLIST = "REMOVE_BLACKLIST";
+export const CLEAR_BLACKLIST = "CLEAR_BLACKLIST";
+export const SET_USER = "SET_USER";
+
+export const SETTINGS_PANEL_ON = "SETTINGS_PANEL_ON";
+export const SETTINGS_PANEL_OFF = "SETTINGS_PANEL_OFF";
+
+export const ABOUT_PANEL_ON = "ABOUT_PANEL_ON";
+export const ABOUT_PANEL_OFF = "ABOUT_PANEL_OFF";
