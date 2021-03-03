@@ -1,1 +1,2 @@
 export const SET_REVIEW_DATA = "SET_REVIEW_DATA";
+export const SET_GITHUB_USERS = "SET_GITHUB_USERS";
