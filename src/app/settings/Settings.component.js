@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Settings.css';
 
 const SettingsComponent = (prop) => {
@@ -7,12 +7,6 @@ const SettingsComponent = (prop) => {
   const [repo, setRepo] = useState('');
   const [blocklist, setBlocklist] = useState('');
   const [isHidden, setHidden] = useState(false);
-
-  useEffect(() => {
-    setLogin(settings[0]);
-    setRepo(settings[1]);
-    setBlocklist(settings[2]);
-  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();

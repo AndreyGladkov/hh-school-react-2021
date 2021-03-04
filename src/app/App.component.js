@@ -5,6 +5,7 @@ import ReviewerContainer from './reviewers/ReviewerContainer.component';
 import getData from './reviewers/Reviewer.service';
 import { USERS, REPO } from './reviewers/assets/url.constants';
 import useLocalStorage from '../hooks/useLocalStorage.hook';
+import EmptyData from './reviewers/assets/emptydata.constants';
 
 const AppComponent = () => {
   const [user, setUser] = useState({});
@@ -32,9 +33,7 @@ const AppComponent = () => {
     return setReviewer(randomReviewer || {});
   }, [reviewers]);
 
-  const setUsersData = (newData) => {
-    const [newUser, newReviewers] = newData;
-
+  const setUsersData = (newUser, newReviewers) => {
     setUser(newUser);
     setReviewers([...newReviewers]);
   };
@@ -44,16 +43,19 @@ const AppComponent = () => {
     let newReviewers = [];
 
     if (settings[0]) {
-      newUser = await getData(`${USERS}/${settings[0]}`).then((res) => res);
+      newUser = await getData(`${USERS}/${settings[0]}`, EmptyData.USER).then(
+        (res) => res,
+      );
     }
 
     if (settings[1]) {
       newReviewers = await getData(
         `${REPO}/${settings[0]}/${settings[1]}/contributors`,
+        EmptyData.REVIEWERS,
       );
     }
 
-    return setUsersData([newUser, newReviewers]);
+    return setUsersData(newUser, newReviewers);
   }, [settings]);
 
   useEffect(() => {
