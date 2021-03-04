@@ -74,7 +74,7 @@ const AppComponent = () => {
     <div className="App">
       <header className="App-header">
         <p className="header-element">hh react homework</p>
-        <p className="header-element">meow :3</p>
+        <p className="header-element">now with redux! :3</p>
       </header>
       <main className="App-main">
         <SettingsComponent settings={settings} setSettings={setSettings} />
