@@ -1,7 +1,12 @@
+import {RECEIVE_USERS} from '../../api/contributors'
+
 const users = (state = [], action) => {
+    console.log(action);
+    console.log(state);
     switch(action.type){
-   //     case SET_REPO:
-   //         return state = action.payload;
+       case RECEIVE_USERS:
+        state = action.users;
+           return state;
    //     // case "DECREMENT":
    //     //     return state - 1
         default: 

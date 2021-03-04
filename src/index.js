@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import { fetchUsers } from './api/contributors';
 import App from './App';
 import './index.css';
 import { setSettings } from './localSave';
@@ -15,6 +16,7 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root')
 );
+store.dispatch(fetchUsers(store.getState().settings.repo));
 store.subscribe(() => {
   let settings = store.getState().settings;
   setSettings(settings);

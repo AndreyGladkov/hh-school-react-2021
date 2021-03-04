@@ -12,7 +12,7 @@ export const removeBlacklist = value => ({
     payload: value
 })
 export const addBlacklist = value => ({
-    type: REMOVE_BLACKLIST,
+    type: ADD_BLACKLIST,
     payload: value
 })
 export const setUser = user => ({

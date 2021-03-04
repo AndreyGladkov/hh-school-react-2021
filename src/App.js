@@ -1,23 +1,25 @@
 import { delay } from 'delay';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { animated, config, useSpring } from 'react-spring';
-import { getContributors } from './api/contributors';
+import { fetchUsers } from './api/contributors';
 import './App.css';
 import { ButtonSettings, Card, Settings } from './components';
 import { getRandomArbitrary } from './consts';
 import { About } from './help';
+import { aboutOff, aboutOn, settingsOn, setttingsOff } from './store/actions/appsateActions';
 import { addBlacklist, clearBlacklist, removeBlacklist, setRepo, setUser } from './store/actions/settingsActions';
 
 function App() {
-  const repo = useSelector((state) => { console.log(state); return state.settings.repo });
-  const user = useSelector((state) => state.settings.user)
-  const blacklist = useSelector((state) => state.settings.blacklist)
-  const users = useSelector((state) => state.users);
+  const repo = useSelector(state => state.settings.repo, shallowEqual);
+  const user = useSelector(state => state.settings.user, shallowEqual)
+  const blacklist = useSelector(state => [...state.settings.blacklist], shallowEqual)
+  const users = useSelector(state => state.users, shallowEqual);
   const dispatch = useDispatch();
   //const [users, setUsers] = useState(null);
-  const [isSettings, setSettingsVisible] = useState(null);
-  const [isAbout, setAbout] = useState(false);
+  // const [isSettings, setSettingsVisible] = useState(null);
+  // const [isAbout, setAbout] = useState(false);
+  const isSettings = useSelector(state => state.appstate.settings, shallowEqual)
+  const isAbout = useSelector(state => state.appstate.about, shallowEqual)
 
   const style = useSpring({
     ...config.slow,
@@ -52,10 +54,16 @@ function App() {
       alert("Нет пользователей для review! Проверьте настройки...");
     }
   }
-  useEffect(() => {
-    // handleSettings();
-    return;
-  }, []);
+  function setAbout(state) {
+    state ? dispatch(aboutOn()) : dispatch(aboutOff())
+  }
+  function setSettingsVisible(state) {
+    state ? dispatch(settingsOn()) : dispatch(setttingsOff())
+  }
+  // useEffect(() => {
+  //   // handleSettings();
+  //   return;
+  // }, []);
   return (
     <div className="App">
       <div className="buttons">
@@ -77,13 +85,14 @@ function App() {
               }}
               onChangeRepo={(repo) => {
                 dispatch(setRepo(repo));
+                dispatch(fetchUsers(repo));
               }}
               clearAll={() => {
                 dispatch(clearBlacklist())
               }}
               onSaveSettings={(settings) => {
                 dispatch(setRepo(repo));
-
+                dispatch(fetchUsers(repo));
               }}
               onAdd={addToBlack}
               onDelete={deleteFromBlackList} />
