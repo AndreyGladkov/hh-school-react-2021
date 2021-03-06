@@ -1,12 +1,17 @@
 import './App.css';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import {connect} from 'react-redux';
 import Settings from './Settings';
-import ReviewerFinder from './ReviewFinder';
-import useStateSettings from './useStateSettings';
+import ReviewerFinder from './ReviewerFinder';
+import {setSettings} from './models/settings';
 
-function App() {
+function App(props) {
   const [showSettings, setShowSettings] = useState(false);
-  const [settings, setSettings] = useStateSettings({login: "", repo: "", blackList: []});
+
+  useEffect(() => {
+    localStorage.getItem('settings')
+      && props.setSettings(JSON.parse(localStorage.getItem('settings')));
+  }, []);
 
   return (
     <div className="App">
@@ -16,11 +21,14 @@ function App() {
       <main>
         <button onClick={() => setShowSettings(!showSettings)}>{showSettings ? "Hide" : "Show"} settings</button>
         {showSettings ?
-          <Settings settings={settings} saveSetting={(settings) => setSettings(settings)} /> : 
-          <ReviewerFinder settings={settings} />}
+          <Settings /> : 
+          <ReviewerFinder />}
       </main>
     </div>
   );
 }
 
-export default App;
+export default connect(
+  state => state,
+  {setSettings}
+)(App);

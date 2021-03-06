@@ -9,7 +9,7 @@ function BlackList(props) {
       {props.blackList.map(contributor => <li key={contributor}>{contributor} <button onClick={() => props.removeFromBlackList(contributor)}>Remove</button></li>)}
     </ul>
     <input id="blackList" value={currentIgnore} onChange={(e) => setCurrentIgnore(e.target.value)} />&nbsp;
-    <button onClick={() => props.addToBlackList(currentIgnore)}>Add</button>
+    <button onClick={() => {setCurrentIgnore(''); props.addToBlackList(currentIgnore)}}>Add</button>
     <br />
     <br />
   </div>)

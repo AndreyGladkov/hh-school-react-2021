@@ -1,4 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import {connect} from "react-redux";
+import {setSettings} from './models/settings';
 import BlackList from './BlackList';
 
 function Settings(props) {
@@ -20,7 +22,11 @@ function Settings(props) {
 
   const removeFromBlackList = (contributor) => {
     setBlackList(blackList.filter(value => value !== contributor));
-  }
+  };
+
+  useEffect(() => {
+    localStorage.setItem('settings', JSON.stringify(props.settings));
+  }, [props.settings]);
 
   return (<div>
     <div>
@@ -32,9 +38,12 @@ function Settings(props) {
       <input id="repo" type="text" value={repo} onChange={(e) => setRepo(e.target.value)} />
     </div>
     <BlackList blackList={blackList} addToBlackList={addToBlackList} removeFromBlackList={removeFromBlackList} />
-    <button onClick={() => props.saveSetting({login: login, repo: repo, blackList: blackList})}>Save</button>
+    <button onClick={() => props.setSettings({login: login, repo: repo, blackList: blackList})}>Save</button>
     <button onClick={cancel}>Cancel</button>
   </div>);
 }
 
-export default Settings;
+export default connect(
+  state => state,
+  {setSettings}
+)(Settings);
