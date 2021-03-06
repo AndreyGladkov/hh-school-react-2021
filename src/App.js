@@ -12,6 +12,7 @@ function App() {
     const [repo, setRepo] = React.useState("");
 
     const gitHubUsers = useSelector((state) => state.gitHubUsers);
+    const settings = useSelector((state) => state.settings);
     const { developer, reviewer } = useSelector((state) => state.review);
     const dispatch = useDispatch();
 
@@ -19,30 +20,14 @@ function App() {
         setShowSettings(!isShowSettings);
     };
 
-    const handler = () => {
-        const settings = JSON.parse(localStorage.getItem("settings"));
-
-        if (repo === settings.repo) {
-            createReview();
-            return;
-        }
-
-        dispatch(fetchReviewDataAsync(settings.repo));
-        setRepo(settings.repo);
-    };
-
     const createReview = React.useCallback(() => {
-        const settings = JSON.parse(localStorage.getItem("settings"));
+        if (!gitHubUsers) return;
+
         const login = settings.login;
         const blacklist = settings.blacklist.split(";");
 
-        if (!gitHubUsers || !login) return;
-
         const user = gitHubUsers[login];
-        if (!user) {
-            alert("You don't contribute in this repo");
-            return;
-        }
+        if (!user) return;
 
         let contributors = Object.keys(gitHubUsers);
         if (blacklist.length > 0) {
@@ -60,13 +45,20 @@ function App() {
         }
 
         dispatch(setReviewData(user, rev));
-    }, [gitHubUsers, dispatch]);
+    }, [settings, gitHubUsers, dispatch]);
 
-    React.useEffect(() => {
-        //@TODO: Почему здесь пустые значения localStorage ???
-        const settings = JSON.parse(localStorage.getItem("settings"));
-        console.log(settings);
-    }, []);
+    const handler = () => {
+        if (!settings.repo) return;
+
+        if (repo === settings.repo) {
+            createReview();
+            return;
+        }
+
+        dispatch(fetchReviewDataAsync(settings.repo));
+        setRepo(settings.repo);
+        createReview();
+    };
 
     React.useEffect(() => {
         createReview();
