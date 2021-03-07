@@ -1,12 +1,12 @@
 import React, {useEffect} from 'react';
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import {loadUserSuccess, loadUserFailure} from './models/user';
 import {loadReviewerSuccess, loadReviewerFailure} from './models/reviewer';
 import User from './User';
 
 const BASE_URL = 'https://api.github.com';
 
-async function getRequest(url) {
+function getRequest(url) {
   return fetch(url)
     .then(response => {
       if (!response.ok) {
@@ -28,14 +28,30 @@ function chooseReviewer(contributors, blackList = []) {
   return choosen;
 }
 
-function ReviewerFinder(props) {
-  const onFindHandler = () => {
-    getRequest(`${BASE_URL}/repos/${props.settings.repo}/contributors`)
+function fetchUser(login) {
+  return function(dispatch, getState) {
+    return getRequest(`${BASE_URL}/users/${login}`)
+      .then(user => dispatch(loadUserSuccess(user)))
+      .catch(({message}) => dispatch(loadUserFailure(message)));
+  }
+}
+
+function findReviewer(repo, blackList) {
+  return function(dispatch, getState) {
+    return getRequest(`${BASE_URL}/repos/${repo}/contributors`)
       .then(contributors => {
-        const choosen = chooseReviewer(contributors, [props.settings.login, ...props.settings.blackList])
-        props.loadReviewerSuccess(choosen);
+        const choosen = chooseReviewer(contributors, blackList)
+        dispatch(loadReviewerSuccess(choosen));
       })
-      .catch(error => props.loadReviewerFailure(error.message));
+      .catch(({message}) => dispatch(loadReviewerFailure(message)));
+  }
+}
+
+function ReviewerFinder(props) {
+  const dispatch = useDispatch();
+
+  const onFindHandler = () => {
+    dispatch(findReviewer(props.settings.repo, [props.settings.login, ...props.settings.blackList]));
   }
 
   useEffect(() => {
@@ -43,12 +59,7 @@ function ReviewerFinder(props) {
     if (!login) {
       return;
     }
-
-    getRequest(`${BASE_URL}/users/${login}`)
-      .then(user => props.loadUserSuccess(user))
-      .catch(error => {
-        props.loadUserFailure(error.message)
-      });
+    dispatch(fetchUser(login));
   }, [props.settings.login]);
 
   return (

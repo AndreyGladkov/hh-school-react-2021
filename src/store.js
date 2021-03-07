@@ -2,6 +2,7 @@ import {createStore, combineReducers, applyMiddleware} from 'redux';
 import settings from './models/settings';
 import user from './models/user';
 import reviewer from './models/reviewer';
+import thunk from './middlewares/thunk';
 
 const reducer = combineReducers({
   settings,
@@ -9,4 +10,4 @@ const reducer = combineReducers({
   reviewer
 });
 
-export default createStore(reducer);
+export default createStore(reducer, {}, applyMiddleware(thunk));
