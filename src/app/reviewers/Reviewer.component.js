@@ -6,11 +6,13 @@ const ReviewerComponent = (prop) => {
 
   return (
     <div>
-      <img
-        src={avatar || ''}
-        className="Reviewer-avatar"
-        alt="Reviewer avatar"
-      />
+      {avatar && (
+        <img
+          src={avatar || ''}
+          className="Reviewer-avatar"
+          alt="Reviewer avatar"
+        />
+      )}
       <p className="Reviewer-name">{name || 'Загрузка...'}</p>
     </div>
   );
