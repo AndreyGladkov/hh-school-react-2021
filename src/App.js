@@ -26,7 +26,7 @@ function App() {
         const login = settings.login;
         const blacklist = settings.blacklist.split(";");
 
-        const user = gitHubUsers[login];
+        const user = gitHubUsers[login].login;
         if (!user) return;
 
         let contributors = Object.keys(gitHubUsers);
@@ -41,7 +41,7 @@ function App() {
         const random = contributors[Math.floor(Math.random() * contributors.length)];
         let rev = null;
         if (random) {
-            rev = gitHubUsers[random];
+            rev = gitHubUsers[random].login;
         }
 
         dispatch(setReviewData(user, rev));
@@ -74,8 +74,24 @@ function App() {
                 </div>
             </div>
             <div className="review">
-                {developer === null ? null : <Card {...developer} />}
-                {reviewer === null ? null : <Card {...reviewer} />}
+                {developer === null ? null : (
+                    <Card
+                        {...{
+                            header: "Developer",
+                            headerValue: gitHubUsers[developer].login,
+                            content: gitHubUsers[developer].avatar_url,
+                        }}
+                    />
+                )}
+                {reviewer === null ? null : (
+                    <Card
+                        {...{
+                            header: "Reviewer",
+                            headerValue: gitHubUsers[reviewer].login,
+                            content: gitHubUsers[reviewer].avatar_url,
+                        }}
+                    />
+                )}
             </div>
         </>
     );
