@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {connect, useDispatch} from "react-redux";
+import {connect, useDispatch, useSelector} from "react-redux";
 import {loadUserSuccess, loadUserFailure} from './models/user';
 import {loadReviewerSuccess, loadReviewerFailure} from './models/reviewer';
 import User from './User';
@@ -47,38 +47,31 @@ function findReviewer(repo, blackList) {
   }
 }
 
-function ReviewerFinder(props) {
+export default function ReviewerFinder(props) {
   const dispatch = useDispatch();
+  const {settings, user, reviewer} = useSelector(state => state);
 
   const onFindHandler = () => {
-    dispatch(findReviewer(props.settings.repo, [props.settings.login, ...props.settings.blackList]));
+    dispatch(findReviewer(settings.repo, [settings.login, ...settings.blackList]));
   }
 
   useEffect(() => {
-    const login = props.settings.login;
+    const login = settings.login;
     if (!login) {
       return;
     }
     dispatch(fetchUser(login));
-  }, [props.settings.login]);
+  }, [settings.login]);
 
   return (
     <div>
       <div>
-        Git Login: {props.settings.login}
+        Git Login: {settings.login}
       </div>
       <div>
         <button onClick={onFindHandler}>Find reviewer</button>
-        <User user={props.reviewer} title="Reviewer" />
-        <User user={props.user} title="Git user" />
+        <User user={reviewer} title="Reviewer" />
+        <User user={user} title="Git user" />
       </div>
     </div>);
 }
-
-export default connect(
-  state => state,
-  {
-    loadUserFailure, loadUserSuccess,
-    loadReviewerFailure, loadReviewerSuccess
-  }
-)(ReviewerFinder);

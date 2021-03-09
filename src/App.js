@@ -29,6 +29,6 @@ function App(props) {
 }
 
 export default connect(
-  state => state,
+  null,
   {setSettings}
 )(App);

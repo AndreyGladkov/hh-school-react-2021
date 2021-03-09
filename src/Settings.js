@@ -44,6 +44,6 @@ function Settings(props) {
 }
 
 export default connect(
-  state => state,
+  ({settings}) => {return {settings}},
   {setSettings}
 )(Settings);
