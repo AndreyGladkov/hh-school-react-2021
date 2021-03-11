@@ -1,76 +1,114 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import actions, { appActions } from './state/main.actions';
 import './App.css';
 import SettingsComponent from './settings/Settings.component';
 import ReviewerContainer from './reviewers/ReviewerContainer.component';
-import getData from './reviewers/Reviewer.service';
-import { USERS, REPO } from './reviewers/assets/url.constants';
 import useLocalStorage from '../hooks/useLocalStorage.hook';
+import getData, { getRandomReviewer } from './reviewers/Reviewer.service';
+import { REPO, USERS } from './reviewers/assets/url.constants';
 import EmptyData from './reviewers/assets/emptydata.constants';
 
 const AppComponent = () => {
-  const [user, setUser] = useState({});
-  const [reviewer, setReviewer] = useState({});
+  const user = useSelector((store) => store.app.user);
+  const reviewer = useSelector((store) => store.app.reviewer);
+  const reviewerList = useSelector((store) => store.app.reviewerList);
+  const settings = useSelector((store) => store.app.settings);
+  const isLoading = useSelector((store) => store.app.loading);
 
-  const [settings, setSettings] = useState(['', '', '']);
   const [storeSettings, setStoreSettings] = useLocalStorage('storeSettings');
-  const [blocklist, setBlocklist] = useState([]);
-  const [reviewers, setReviewers] = useState([]);
 
-  const getRandomReviewer = useCallback(() => {
-    if (settings[2]) setBlocklist(settings[2].split(','));
+  const dispatch = useDispatch();
 
-    if (!reviewers) {
-      return { name: '', avatar_url: '' };
-    }
-
-    const reviewerList = reviewers.filter(
-      (filteredReviewers) => !blocklist.includes(filteredReviewers.login),
-    );
-
-    const randomReviewer =
-      reviewerList[Math.floor(Math.random() * reviewerList.length)];
-
-    return setReviewer(randomReviewer || {});
-  }, [reviewers]);
-
-  const setUsersData = (newUser, newReviewers) => {
-    setUser(newUser);
-    setReviewers([...newReviewers]);
+  const setReviewer = (data) => {
+    dispatch(appActions(actions.AppActions.LOAD_REVIEWER, data));
   };
 
-  const getUsersData = useCallback(async () => {
-    let newUser = {};
-    let newReviewers = [];
+  const writeToHistory = (data) => {
+    const tempData = data;
+    // eslint-disable-next-line no-console
+    console.log('Api returned: ', tempData);
+  };
 
-    if (settings[0]) {
-      newUser = await getData(`${USERS}/${settings[0]}`, EmptyData.USER).then(
-        (res) => res,
-      );
+  const getUserData = async () => {
+    let data = {};
+
+    if (settings.login) {
+      data = await getData(
+        `${USERS}/${settings.login}`,
+        EmptyData.USER,
+        writeToHistory,
+      ).then((res) => res);
     }
 
-    if (settings[1]) {
-      newReviewers = await getData(
-        `${REPO}/${settings[0]}/${settings[1]}/contributors`,
+    return data;
+  };
+
+  const getReviewersData = async () => {
+    let data = [];
+
+    if (settings.repo) {
+      data = await getData(
+        `${REPO}/${settings.login}/${settings.repo}/contributors`,
         EmptyData.REVIEWERS,
-      );
+        writeToHistory,
+      ).then((res) => res);
     }
 
-    return setUsersData(newUser, newReviewers);
-  }, [settings]);
+    return data;
+  };
+
+  const fetchGitData = async (type) => {
+    if (type === 'USER') {
+      dispatch(appActions(actions.AppActions.LOAD_USER));
+    }
+
+    dispatch(appActions(actions.AppActions.LOAD_REVIEWER_LIST));
+
+    try {
+      if (type === 'USER') {
+        const data = await getUserData();
+
+        dispatch(appActions(actions.AppActions.LOAD_USER_SUCCESS, data));
+
+        return null;
+      }
+
+      const data = await getReviewersData();
+
+      dispatch(appActions(actions.AppActions.LOAD_REVIEWER_LIST_SUCCESS, data));
+    } catch (error) {
+      if (type === 'USER') {
+        dispatch(appActions(actions.AppActions.LOAD_USER_FAILURE));
+
+        return null;
+      }
+
+      dispatch(appActions(actions.AppActions.LOAD_REVIEWER_LIST_FAILURE));
+    }
+
+    return null;
+  };
 
   useEffect(() => {
-    setSettings(JSON.parse(storeSettings) || '');
+    dispatch(
+      appActions(
+        actions.AppActions.UPDATE_SETTINGS,
+        JSON.parse(storeSettings) || {},
+      ),
+    );
   }, []);
 
   useEffect(() => {
-    getUsersData();
+    fetchGitData('USER');
+    fetchGitData('REVIEWERS');
 
     setStoreSettings(JSON.stringify(settings) || '');
   }, [settings]);
 
   useEffect(() => {
-    getRandomReviewer();
-  }, [reviewers]);
+    getRandomReviewer(reviewerList, settings.blocklist, setReviewer);
+  }, [reviewerList]);
 
   return (
     <div className="App">
@@ -79,14 +117,13 @@ const AppComponent = () => {
         <p className="header-element">now with redux! :3</p>
       </header>
       <main className="App-main">
-        <SettingsComponent settings={settings} setSettings={setSettings} />
-        {settings[0] ? (
-          <ReviewerContainer
-            user={user}
-            reviewer={reviewer}
-            repo={settings[1]} // Вообще, можно, конечно, для репо и отдельный стейт завести, как минимум, для красоты
-          />
-        ) : null}
+        <SettingsComponent />
+        <ReviewerContainer
+          user={user}
+          reviewer={reviewer}
+          repo={settings.repo}
+          isLoading={isLoading}
+        />
       </main>
     </div>
   );

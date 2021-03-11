@@ -1,20 +1,47 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import actions, { appActions, settingsActions } from '../state/main.actions';
 import './Settings.css';
+import { getRandomReviewer } from '../reviewers/Reviewer.service';
 
-const SettingsComponent = (prop) => {
-  const { settings, setSettings } = prop;
-  const [login, setLogin] = useState('');
-  const [repo, setRepo] = useState('');
-  const [blocklist, setBlocklist] = useState('');
-  const [isHidden, setHidden] = useState(false);
+const SettingsComponent = () => {
+  const isHidden = useSelector((state) => state.app.isHidden);
+  const reviewerList = useSelector((state) => state.app.reviewerList);
+  const settings = useSelector((state) => state.app.settings);
+
+  const login = useSelector((state) => state.settings.login);
+  const repo = useSelector((state) => state.settings.repo);
+  const blocklist = useSelector((state) => state.settings.blocklist);
+
+  const [previousState, setPreviousState] = useState({});
+
+  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSettings([login, repo, blocklist]);
+    setPreviousState(settings);
+
+    const setReviewer = (data) => {
+      dispatch(appActions(actions.AppActions.LOAD_REVIEWER, data));
+    };
+
+    if (settings === previousState) {
+      getRandomReviewer(reviewerList, blocklist, setReviewer);
+
+      return;
+    }
+
+    dispatch(
+      appActions(actions.AppActions.UPDATE_SETTINGS, {
+        login,
+        repo,
+        blocklist,
+      }),
+    );
   };
 
   const toggleVisibility = () => {
-    setHidden(!isHidden);
+    dispatch(appActions(actions.AppActions.SET_HIDDEN_STATE, !isHidden));
   };
 
   return (
@@ -36,9 +63,18 @@ const SettingsComponent = (prop) => {
               type="text"
               value={login}
               placeholder={
-                settings[0] ? `For example, ${settings[0]}` : 'Input login'
+                settings.login
+                  ? `For example, ${settings.login}`
+                  : 'Input login'
               }
-              onChange={(e) => setLogin(e.target.value)}
+              onChange={(e) => {
+                dispatch(
+                  settingsActions(
+                    actions.SettingsActions.UPDATE_LOGIN,
+                    e.target.value,
+                  ),
+                );
+              }}
             />
           </label>
           <label htmlFor="repoInput">
@@ -49,9 +85,16 @@ const SettingsComponent = (prop) => {
               type="text"
               value={repo}
               placeholder={
-                settings[1] ? `For example, ${settings[1]}` : 'Input repo'
+                settings.repo ? `For example, ${settings.repo}` : 'Input repo'
               }
-              onChange={(e) => setRepo(e.target.value)}
+              onChange={(e) => {
+                dispatch(
+                  settingsActions(
+                    actions.SettingsActions.UPDATE_REPO,
+                    e.target.value,
+                  ),
+                );
+              }}
             />
           </label>
           <label htmlFor="blocklistInput">
@@ -62,9 +105,18 @@ const SettingsComponent = (prop) => {
               type="text"
               value={blocklist}
               placeholder={
-                settings[2] ? `For example, ${settings[2]}` : 'Input blocklist'
+                settings.blocklist
+                  ? `For example, ${settings.blocklist}`
+                  : 'Input blocklist'
               }
-              onChange={(e) => setBlocklist(e.target.value)}
+              onChange={(e) => {
+                dispatch(
+                  settingsActions(
+                    actions.SettingsActions.UPDATE_BLOCKLIST,
+                    e.target.value,
+                  ),
+                );
+              }}
             />
           </label>
           <input
