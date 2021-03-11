@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
 
 const Settings = (props) => {
-  const [showSettings, ChangeShowSettings] = useState(false);
+  const [showSettings, SetShowSettings] = useState(false);
 
-  const [login, ChangeLoginHandler] = useState('ifuncuran');
-  const [repo, ChangeRepoHandler] = useState('repo');
-  const [blacklist, ChangeBlacklistHandler] = useState('blacklist');
+  const [login, SetLogin] = useState(props.settings['login']);
+  const [repo, SetRepo] = useState(props.settings['repo']);
+  const [blacklist, SetBlacklist] = useState(props.settings['blacklist']);
 
   let settings = null;
+
+  function SaveAndQuit() {
+    props.SetSettings({
+      login: login,
+      repo: repo,
+      blacklist: blacklist,
+    });
+    SetShowSettings(!showSettings);
+  }
 
   if (showSettings) {
     settings = (
@@ -16,7 +25,7 @@ const Settings = (props) => {
           <div className="login">
             <input
               type="text"
-              onChange={(event) => ChangeLoginHandler(event.target.value)}
+              onChange={(event) => SetLogin(event.target.value)}
               value={login}
               className="input"
             />
@@ -26,7 +35,7 @@ const Settings = (props) => {
           <div className="repo">
             <input
               type="text"
-              onChange={(event) => ChangeRepoHandler(event.target.value)}
+              onChange={(event) => SetRepo(event.target.value)}
               value={repo}
               className="input"
             />
@@ -36,7 +45,7 @@ const Settings = (props) => {
           <div className="blackList">
             <input
               type="text"
-              onChange={(event) => ChangeBlacklistHandler(event.target.value)}
+              onChange={(event) => SetBlacklist(event.target.value)}
               value={blacklist}
               className="input"
             />
@@ -44,9 +53,7 @@ const Settings = (props) => {
         </div>
         <div className="settings__row">
           <div className="buttons">
-            <button onClick={() => ChangeShowSettings(!showSettings)}>
-              Сохранить и выйти
-            </button>
+            <button onClick={() => SaveAndQuit()}>Сохранить и выйти</button>
           </div>
         </div>
       </div>
@@ -55,9 +62,7 @@ const Settings = (props) => {
 
   return (
     <div className="settings">
-      <button onClick={() => ChangeShowSettings(!showSettings)}>
-        Settings
-      </button>
+      <button onClick={() => SetShowSettings(!showSettings)}>Settings</button>
       {settings}
     </div>
   );
