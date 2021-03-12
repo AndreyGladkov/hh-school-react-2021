@@ -7,23 +7,27 @@ import React, { useState } from 'react';
 function App() {
   const [reviewer, SetReviewer] = useState(null);
   const [reviewersToChoose, SetReviewersToChoose] = useState(null);
+  const [blacklisted, SetBlacklisted] = useState(null);
+  const [user, SetUser] = useState(null);
   // пока без локал хоста...
   const [settings, SetSettings] = useState({
     login: 'facebook',
     repo: 'react',
-    blacklist: '1,2,3',
+    blacklist: 'petehunt,zpao,keyz,bgw',
   });
-
-  // тут достаем данные из гитхаба:
-  const user = getUserFromAPI(settings.login);
 
   function settingsHandler(settings) {
     SetSettings(settings);
   }
 
   const getRewiever = () => {
-    // тоже достаем данные из гитхаба и сетим в ревьювер, поскольку по нажатию кнопки вызывается - из хука переделал в функцию
-    getReviewerFromAPI(settings, SetReviewer, SetReviewersToChoose);
+    getUserFromAPI(settings.login, SetUser);
+    getReviewerFromAPI(
+      settings,
+      SetReviewer,
+      SetReviewersToChoose,
+      SetBlacklisted
+    );
   };
 
   return (
@@ -57,13 +61,25 @@ function App() {
             {!reviewer && 'reviewer is null'}
           </div>
         </div>
-        <div className="test">
+        <div className="rewiewers-to-choose">
+          <p>Выбран из следующего списка:</p>
           <ul>
             {reviewersToChoose &&
-              reviewersToChoose.map((user) => {
-                return <li>{user.login}</li>;
+              reviewersToChoose.map((user, index) => {
+                return <li key={index}>{user.login}</li>;
               })}
             {!reviewersToChoose && 'reviewersToChoose is null'}
+          </ul>
+        </div>
+        <hr />
+        <div className="blacklisted">
+          <p>Следующие логины из ревьюеров оказались в черном списке</p>
+          <ul>
+            {blacklisted &&
+              blacklisted.map((user, index) => {
+                return <li key={index}>{user.login}</li>;
+              })}
+            {!blacklisted && 'blacklisted is null'}
           </ul>
         </div>
       </div>
