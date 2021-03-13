@@ -1,20 +1,27 @@
 import './App.css';
+import { setLocalStorage, getFromLocalStorage } from './LocalStorageHandler';
 import getUserFromAPI from './getUserFromAPI';
 import getReviewerFromAPI from './getReviewerFromAPI';
 import Settings from './SettingsComponent/Settings.js';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function App() {
   const [reviewer, SetReviewer] = useState(null);
   const [reviewersToChoose, SetReviewersToChoose] = useState(null);
   const [blacklisted, SetBlacklisted] = useState(null);
   const [user, SetUser] = useState(null);
-  // пока без локал хоста...
-  const [settings, SetSettings] = useState({
-    login: 'facebook',
-    repo: 'react',
-    blacklist: 'petehunt,zpao,keyz,bgw',
-  });
+
+  const [settings, SetSettings] = useState(
+    getFromLocalStorage({
+      login: 'facebook',
+      repo: 'react',
+      blacklist: 'petehunt,zpao,keyz,bgw',
+    })
+  );
+
+  useEffect(() => {
+    setLocalStorage(settings);
+  }, [settings]);
 
   function settingsHandler(settings) {
     SetSettings(settings);

@@ -1,4 +1,4 @@
-export default (
+const getReviewerFromAPI = (
   settings,
   setReviewer,
   setReviewersToChoose,
@@ -19,10 +19,12 @@ export default (
 
   function ReviewerHandler(data) {
     const filtered = data.filter((user) => !blacklist.includes(user.login));
-    const blackisted = data.filter((user) => blacklist.includes(user.login));
+    const blacklisted = data.filter((user) => blacklist.includes(user.login));
     setReviewersToChoose(filtered);
-    setBlacklisted(blackisted);
+    setBlacklisted(blacklisted);
 
     setReviewer(filtered[Math.floor(Math.random() * (filtered.length - 1))]);
   }
 };
+
+export default getReviewerFromAPI;

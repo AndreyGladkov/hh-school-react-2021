@@ -1,4 +1,4 @@
-export default (userName, setUser) => {
+const getUserFromAPI = (userName, setUser) => {
   console.log('getUser');
 
   if (!userName) {
@@ -10,3 +10,5 @@ export default (userName, setUser) => {
     .then((data) => setUser(data))
     .catch((error) => console.error('ошибкя'));
 };
+
+export default getUserFromAPI;
