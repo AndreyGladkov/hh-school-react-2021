@@ -1,21 +1,26 @@
 import './App.css';
 import { setLocalStorage, getFromLocalStorage } from './LocalStorageHandler';
-import getUserFromAPI from './getUserFromAPI';
-import getReviewerFromAPI from './getReviewerFromAPI';
 import Settings from './SettingsComponent/Settings.js';
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import fetchAuthor from './redux/models/fetchAuthor';
+import fetchReviewers from './redux/models/fetchReviewers';
 
 function App() {
-  const [reviewer, SetReviewer] = useState(null);
-  const [reviewersToChoose, SetReviewersToChoose] = useState(null);
-  const [blacklisted, SetBlacklisted] = useState(null);
-  const [user, SetUser] = useState(null);
+  const author = useSelector(({ Author }) => Author);
+  const reviewer = useSelector(({ Reviewer }) => Reviewer);
+  const reviewersToChoose = useSelector(
+    ({ ReviewersToChoose }) => ReviewersToChoose
+  );
+  const blacklisted = useSelector(({ Blacklisted }) => Blacklisted);
+
+  const dispatch = useDispatch();
 
   const [settings, SetSettings] = useState(
     getFromLocalStorage({
       login: 'facebook',
       repo: 'react',
-      blacklist: 'petehunt,zpao,keyz,bgw',
+      blacklist: 'ifuncuran,petehunt,zpao,keyz,bgw,syranide',
     })
   );
 
@@ -28,14 +33,11 @@ function App() {
   }
 
   const getRewiever = () => {
-    getUserFromAPI(settings.login, SetUser);
-    getReviewerFromAPI(
-      settings,
-      SetReviewer,
-      SetReviewersToChoose,
-      SetBlacklisted
-    );
+    dispatch(fetchAuthor(settings.login));
+    dispatch(fetchReviewers(settings));
   };
+
+  console.log('from APP', reviewersToChoose);
 
   return (
     <div className="App">
@@ -47,15 +49,15 @@ function App() {
         <hr />
         <div className="results">
           <div className="user-container">
-            {user && (
+            {author && (
               <div className="user">
-                user name: {user.name}
+                user name: {author.login}
                 <hr />
-                <img src={user.avatar_url} alt="" />
+                <img src={author.avatar_url} alt="" />
                 <hr />
               </div>
             )}
-            {!user && 'user is null'}
+            {!author && 'user is null'}
           </div>
           <div className="reviewer-container">
             {reviewer && (
@@ -78,6 +80,7 @@ function App() {
             {!reviewersToChoose && 'reviewersToChoose is null'}
           </ul>
         </div>
+
         <hr />
         <div className="blacklisted">
           <p>Следующие логины из ревьюеров оказались в черном списке</p>
