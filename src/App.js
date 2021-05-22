@@ -1,6 +1,11 @@
+import React from "react";
+import Settings from "./components/Settings";
+import "./styles.css";
+import "./constants.css";
+
 function App() {
   return (
-    <div className="App"></div>
+    <Settings />
   );
 }
 
