@@ -1,0 +1,24 @@
+.custom-input,
+.custom-input--error {
+    margin: 10px;
+    padding: 7px;
+    border-radius: 4px;
+    outline: none;
+    border: 1px solid #c5c5c5;
+    transition: 0.2s;
+}
+
+.custom-input:focus {
+    padding: 6px;
+    border: 2px solid var(--default-color);
+}
+
+.custom-input--error {
+    border: 2px solid var(--danger-color);
+}
+
+.custom-input__error-message {
+    margin: 0 10px;
+    color: var(--danger-color);
+    font-size: 12px;
+}

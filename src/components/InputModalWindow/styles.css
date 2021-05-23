@@ -1,0 +1,39 @@
+.input-modal-window {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #00000080;
+}
+
+.input-modal-window__content {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    margin: 100px auto;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #ffffff;
+}
+
+.input-modal-window__text-input {
+    margin: 10px;
+}
+
+.input-modal-window__close-button {
+    align-self: flex-end;
+    margin-bottom: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.input-modal-window__close-button:hover {
+    color: var(--default-color);
+}
+
+.input-modal-window__add-button {
+    margin: 10px;
+}

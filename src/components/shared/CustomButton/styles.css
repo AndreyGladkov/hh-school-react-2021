@@ -1,0 +1,55 @@
+.custom-button--outlined--default,
+.custom-button--filled--default,
+.custom-button--filled--danger,
+.custom-button--outlined--default:active {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    outline: none;
+    color: var(--default-color);
+    background: #ffffff;
+    border: 2px solid var(--default-color);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.custom-button--filled--default {
+    color: #ffffff;
+    background: var(--default-color);
+}
+
+.custom-button--filled--danger {
+    color: #ffffff;
+    border: 2px solid var(--danger-color);
+    background: var(--danger-color);
+}
+
+.custom-button--outlined--default:hover {
+    color: var(--default-color-hover);
+}
+
+.custom-button--outlined--default:active {
+    color: var(--default-color);
+}
+
+.custom-button--filled--default:hover {
+    background: var(--default-color-hover);
+}
+
+.custom-button--filled--default:active {
+    background: var(--default-color);
+}
+
+.custom-button--filled--default:disabled {
+    border: 2px solid var(--default-color-disabled);
+    background: var(--default-color-disabled);
+    cursor: not-allowed;
+}
+
+.custom-button--filled--danger:hover {
+    background: var(--danger-color-hover);
+}
+
+.custom-button--filled--danger:active {
+    background: var(--danger-color);
+}
