@@ -1,0 +1,7 @@
+body {
+    --default-color: #0580e4;
+    --default-color-hover: #3094e6;
+    --default-color-disabled: #84b5dd;
+    --danger-color: #ce0000;
+    --danger-color-hover: #cc3f3f;
+}
