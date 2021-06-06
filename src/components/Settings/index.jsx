@@ -1,16 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import { connect } from "react-redux";
 import BlackList from "../BlackList";
 import UserCard from "../UserCard";
-import Api from "../../api/index.js";
+import { apiThunkCreators } from "../../store/reducers/api.js";
 import CustomButton from "../shared/CustomButton";
 import CustomInput from "../shared/CustomInput";
 import "./styles.css";
+
+const mapStateToProps = (state) => ({
+    userData: state.reducersApi.userData,
+    userDataJson: state.reducersApi.userDataJson,
+    repositoryContributors: state.reducersApi.repositoryContributors,
+    repositoryContributorsJson: state.reducersApi.repositoryContributorsJson
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    getUserData(userName) {
+        dispatch(apiThunkCreators.getUserData(userName));
+    },
+    getRepositoryContributors(repositoryLink){
+        dispatch(apiThunkCreators.getRepositoryContributors(repositoryLink));
+    }
+});
 
 const getInitialStringValue = (key) => (localStorage.getItem(key) || "");
 const getInitialBooleanValue = (key) => (localStorage.getItem(key) === "true" || false);
 const getInitialUserItemValue = (user) => (JSON.parse(localStorage.getItem(user)) || { image: "", login: "" });
 
-const Settings = () => {
+const Settings = (props) => {
     const [settingsAreVisible, toggleSettingsVisibility] = useState(getInitialBooleanValue("settingsAreVisible"));
     const [gitHubLogin, setGitHubLogin] = useState(getInitialStringValue("gitHubLogin"));
     const [gitHubRepository, setGitHubRepository] = useState(getInitialStringValue("gitHubRepository"));
@@ -19,10 +36,15 @@ const Settings = () => {
     const [loginError, setLoginError] = useState("");
     const [repositoryError, setRepositoryError] = useState("");
     const [requestError, setRequestError] = useState("");
-    const [requestIsInProcess, setRequestState] = useState(false);
+    const [userRequestIsInProcess, setUserRequestState] = useState(false);
+    const [contributorsRequestIsInProcess, setContributorsRequestState] = useState(false);
     const [userHasContributions, setUserHasContributions] = useState(getInitialBooleanValue("userHasContributions"));
 
     const apiRateLimitError = "API rate limit exceeded";
+    const userData = useRef(props.userData);
+    const userDataJson = useRef(props.userDataJson);
+    const repositoryContributors = useRef(props.repositoryContributors);
+    const repositoryContributorsJson = useRef(props.repositoryContributorsJson);
 
     const toggleSettingsVisibilityValue = () => {
         const newValue = !settingsAreVisible;
@@ -60,8 +82,7 @@ const Settings = () => {
         data.message.indexOf(apiRateLimitError) > -1
     );
 
-    const processUserDataResponse = (response) => (
-        response.json().then((responseJson) => {
+    const processUserDataResponse = useCallback((response, responseJson) => {
             if (response.status >= 200 && response.status < 300) {
                 setValue({ image: responseJson.avatar_url, login: responseJson.login }, "reviewee", setReviewee);
             } else if (apiRateLimitExceeded(response, responseJson)) {
@@ -69,10 +90,10 @@ const Settings = () => {
             } else {
                 setLoginError('Print login, for example "console1928"');
             }
-        })
-    );
+            setUserRequestState(false);
+        }, []);
 
-    const setUserContributions = (contributors) => {
+    const setUserContributions = useCallback((contributors) => {
         setValue(false, "userHasContributions", setUserHasContributions);
 
         for (const contributor of contributors) {
@@ -80,10 +101,9 @@ const Settings = () => {
                 setValue(true, "userHasContributions", setUserHasContributions);
             }
         }
-    };
+    }, []);
 
-    const processContributorsResponse = (response) => (
-        response.json().then((responseJson) => {
+    const processContributorsResponse = useCallback((response, responseJson) => {
             if (response.status >= 200 && response.status < 300) {
                 const blackList = JSON.parse(localStorage.getItem("blackList")) || [];
                 const filteredResponse = responseJson.filter(
@@ -110,8 +130,8 @@ const Settings = () => {
             } else {
                 setRepositoryError('Print repository address, for example "https://github.com/console1928/example"');
             }
-        })
-    );
+            setContributorsRequestState(false);
+        }, []);
 
     const generateReviewer = (event) => {
         event.preventDefault();
@@ -125,22 +145,10 @@ const Settings = () => {
             setRepositoryError("This field should not be empty");
             return;
         }
-        setRequestState(true);
-        Promise.all([
-            Api.getUserData(gitHubLogin),
-            Api.getRepositoryContributors(gitHubRepository)
-        ])
-            .then(([currentUser, contributors]) => {
-                processUserDataResponse(currentUser)
-                    .then(() => processContributorsResponse(contributors))
-                    .then();
-            })
-            .catch(() => {
-                setRequestError("An error occured, check your internet connection");
-            })
-            .finally(() => {
-                setRequestState(false);
-            });
+        setUserRequestState(true);
+        props.getUserData(gitHubLogin);
+        setContributorsRequestState(true);
+        props.getRepositoryContributors(gitHubRepository);
     };
 
     const renderUserHasNoContributions = () => (
@@ -149,6 +157,28 @@ const Settings = () => {
             Try changing GitHub login or GitHub repository.
         </div>
     );
+
+    useEffect(() => {
+        if (
+            props.userData !== null &&
+            props.userData !== userData &&
+            props.userDataJson !== null &&
+            props.userDataJson !== userDataJson
+        ) {
+            processUserDataResponse(props.userData, props.userDataJson);
+        }
+    }, [props.userData, props.userDataJson, processUserDataResponse]);
+
+    useEffect(() => {
+        if (
+            props.repositoryContributors !==  null &&
+            props.repositoryContributors !== repositoryContributors &&
+            props.repositoryContributorsJson !== null &&
+            props.repositoryContributorsJson !== repositoryContributorsJson
+        ) {
+            processContributorsResponse(props.repositoryContributors, props.repositoryContributorsJson);
+        }
+    }, [props.repositoryContributors, props.repositoryContributorsJson, processContributorsResponse]);
 
     const renderUserHasContributions = () => (
         <React.Fragment>
@@ -193,7 +223,7 @@ const Settings = () => {
                             value={gitHubLogin}
                             onChange={event => setValue(event.target.value, "gitHubLogin", setGitHubLogin)}
                             errormessage={loginError}
-                            disabled={requestIsInProcess}
+                            disabled={userRequestIsInProcess || contributorsRequestIsInProcess}
                         />
                         <CustomInput
                             type="text"
@@ -201,14 +231,14 @@ const Settings = () => {
                             value={gitHubRepository}
                             onChange={event => setValue(event.target.value, "gitHubRepository", setGitHubRepository)}
                             errormessage={repositoryError}
-                            disabled={requestIsInProcess}
+                            disabled={userRequestIsInProcess || contributorsRequestIsInProcess}
                         />
                         <BlackList />
                         <CustomButton
                             type={"submit"}
                             buttonstyle={"filled"}
                             buttontype={"default"}
-                            disabled={requestIsInProcess}
+                            disabled={userRequestIsInProcess || contributorsRequestIsInProcess}
                         >
                             Generate reviewer
                         </CustomButton>
@@ -228,4 +258,4 @@ const Settings = () => {
     );
 };
 
-export default Settings;
+export default connect(mapStateToProps, mapDispatchToProps)(Settings);
