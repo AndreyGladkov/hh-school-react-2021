@@ -1,3 +1,6 @@
+### Демо на GitHub Pages:
+https://ifuncuran.github.io/hh-school-react-2021/
+
 ### Задание по React
 
 Нужно сделать одностраничное приложение, которое помогает найти ревьюера.
