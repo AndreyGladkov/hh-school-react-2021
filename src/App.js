@@ -1,9 +1,9 @@
 import './App.css';
-import React, {useEffect, useState} from 'react';
-import {connect} from 'react-redux';
-import Settings from './Settings';
-import ReviewerFinder from './ReviewerFinder';
-import {setSettings} from './models/settings';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import Settings from './components/Settings';
+import ReviewerFinder from './components/ReviewerFinder';
+import { setSettings } from './store/actions';
 
 function App(props) {
   const [showSettings, setShowSettings] = useState(false);
@@ -21,7 +21,7 @@ function App(props) {
       <main>
         <button onClick={() => setShowSettings(!showSettings)}>{showSettings ? "Hide" : "Show"} settings</button>
         {showSettings ?
-          <Settings /> : 
+          <Settings /> :
           <ReviewerFinder />}
       </main>
     </div>
@@ -30,5 +30,5 @@ function App(props) {
 
 export default connect(
   null,
-  {setSettings}
+  { setSettings }
 )(App);

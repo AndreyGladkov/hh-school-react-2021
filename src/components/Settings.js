@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {connect} from "react-redux";
-import {setSettings} from './models/settings';
+import {setSettings} from '../store/actions';
 import BlackList from './BlackList';
 
 function Settings(props) {

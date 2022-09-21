@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
-import {connect, useDispatch, useSelector} from "react-redux";
-import {loadUserSuccess, loadUserFailure} from './models/user';
-import {loadReviewerSuccess, loadReviewerFailure} from './models/reviewer';
+import {useDispatch, useSelector} from "react-redux";
+import {loadUserSuccess, loadUserFailure, loadReviewerSuccess, loadReviewerFailure} from '../store/actions';
 import User from './User';
 
 const BASE_URL = 'https://api.github.com';

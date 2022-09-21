@@ -1,8 +1,6 @@
 import {createStore, combineReducers, applyMiddleware} from 'redux';
-import settings from './models/settings';
-import user from './models/user';
-import reviewer from './models/reviewer';
-import thunk from './middlewares/thunk';
+import {settings, user, reviewer } from './reducers';
+import thunk from 'redux-thunk';
 
 const reducer = combineReducers({
   settings,
